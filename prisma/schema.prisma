@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Badge {
+  BadgeID     Int     @id @default(autoincrement()) @map("BadgeID")
+  Name        String  @db.VarChar(100)
+  Description String  @db.Text
+  Condition   String  @db.Text
+
+  GroupBadges GroupBadge[]
+
+  @@map("Badges")
+}
+
+model Comment {
+  CommentID   Int     @id @default(autoincrement()) @map("CommentID")
+  PostID      Int
+  Nickname    String  @db.VarChar(50)
+  Content     String  @db.Text
+  Password    String  @db.VarChar(255)
+  CreatedDate DateTime @default(now()) @map("CreatedDate")
+
+  post Post @relation(fields: [PostID], references: [PostID])
+
+  @@map("Comments")
+}
+
+model Group {
+  GID          Int     @id @default(autoincrement()) @map("GID")
+  GName        String  @db.VarChar(100)
+  GImage       String? @db.VarChar(255)
+  GIntro       String? @db.Text
+  IsPublic     Boolean
+  GPassword    String  @db.VarChar(255)
+  CreatedDate  DateTime @default(now()) @map("CreatedDate")
+  GLikes       Int     @default(0)
+  GBadgeCount  Int     @default(0)
+  PostCount    Int     @default(0)
+
+  posts        Post[]
+  groupBadges  GroupBadge[]
+
+  @@map("Group")
+}
+
+model GroupBadge {
+  GID          Int
+  BadgeID      Int
+  ObtainedDate DateTime @default(now()) @map("ObtainedDate")
+
+  group Group @relation(fields: [GID], references: [GID])
+  badge Badge @relation(fields: [BadgeID], references: [BadgeID])
+
+  @@id([GID, BadgeID])
+  @@map("Group_Badge")
+}
+
+model Post {
+  PostID       Int      @id @default(autoincrement()) @map("PostID")
+  GID          Int
+  Nickname     String   @db.VarChar(51)
+  Title        String   @db.VarChar(100)
+  Image        String?  @db.VarChar(255)
+  Content      String   @db.Text
+  Location     String?  @db.VarChar(100)
+  MemoryMoment DateTime @map("MemoryMoment")
+  IsPublic     Boolean
+  PPassword    String   @db.VarChar(255)
+  CreatedDate  DateTime @default(now()) @map("CreatedDate")
+  LikeCount    Int      @default(0)
+  CommentCount Int      @default(0)
+
+  group    Group   @relation(fields: [GID], references: [GID])
+  comments Comment[]
+  postTags PostTag[]
+
+  @@map("Posts")
+}
+
+model PostTag {
+  PostID Int
+  TagID  Int
+
+  post Post @relation(fields: [PostID], references: [PostID])
+  tag  Tag  @relation(fields: [TagID], references: [TagID])
+
+  @@id([PostID, TagID])
+  @@map("Post_Tag")
+}
+
+model Tag {
+  TagID Int     @id @default(autoincrement()) @map("TagID")
+  Name  String  @db.VarChar(50)
+
+  postTags PostTag[]
+
+  @@map("Tags")
+}
