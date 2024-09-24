@@ -2,7 +2,7 @@ POST http://localhost:3000/api/groups
 Content-Type: application/json
 
 {
-  "GName": "New Group",
+  "GName": "New Group after refractor",
   "GImage": "http://example.com/image.jpg",
   "GIntro": "This is a test group.",
   "IsPublic": true,
@@ -14,3 +14,32 @@ Content-Type: application/json
 
 
 GET http://localhost:3000/api/groups?page=2
+
+
+
+###
+
+PUT http://localhost:3000/api/groups/24
+Content-Type: application/json
+
+{
+  "name": "Updated Group Name",
+  "password": "securepassword",
+  "imageUrl": "https://example.com/new-image.jpg",
+  "isPublic": true,
+  "introduction": "Updated introduction text"
+}
+
+
+###
+
+DELETE http://localhost:3000/api/groups/24
+Content-Type: application/json
+
+{
+  "password" : "securepassword"
+}
+
+
+### 
+GET http://localhost:3000/api/groups/3
