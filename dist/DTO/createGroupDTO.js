@@ -1,7 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateGroupDto = void 0;
+exports.UpdateGroupDto = exports.CreateGroupDto = void 0;
 class CreateGroupDto {
+    constructor(name, password, isPublic, imageURL, introduction) {
+        this.GName = name;
+        this.GPassword = password;
+        this.IsPublic = isPublic;
+        this.GImage = imageURL;
+        this.GIntro = introduction;
+    }
+}
+exports.CreateGroupDto = CreateGroupDto;
+class UpdateGroupDto {
     constructor(gName, isPublic, gPassword, gImage, gIntro) {
         this.GName = gName;
         this.IsPublic = isPublic;
@@ -10,4 +20,4 @@ class CreateGroupDto {
         this.GIntro = gIntro;
     }
 }
-exports.CreateGroupDto = CreateGroupDto;
+exports.UpdateGroupDto = UpdateGroupDto;

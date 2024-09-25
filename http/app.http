@@ -2,15 +2,67 @@ POST http://localhost:3000/api/groups
 Content-Type: application/json
 
 {
-  "GName": "New Group",
-  "GImage": "http://example.com/image.jpg",
-  "GIntro": "This is a test group.",
-  "IsPublic": true,
-  "GPassword": "securepassword"
+  "name": "testing",
+  "image": "http://example.com/image.jpg",
+  "intro": "This is a test group.",
+  "isPublic": true,
+  "password": "securepassword"
 }
 
 
 ###
 
 
-GET http://localhost:3000/api/groups?page=2
+GET http://localhost:3000/api/groups?page=1&isPublic=false
+
+
+
+###
+
+PUT http://localhost:3000/api/groups/5
+Content-Type: application/json
+
+{
+  "name": "Updated third Group Name",
+  "password": "securepassword",
+  "imageUrl": "https://example.com/new-image.jpg",
+  "isPublic": true,
+  "introduction": "Updated introduction text"
+}
+
+
+###
+
+DELETE http://localhost:3000/api/groups/24
+Content-Type: application/json
+
+{
+  "password" : "securepassword"
+}
+
+
+### 
+GET http://localhost:3000/api/groups/3
+
+
+
+
+
+###
+
+POST http://localhost:3000/api/groups/3/verify-password
+Content-Type: application/json
+
+{
+  "password" : "securepassword"
+}
+
+
+### 
+
+POST http://localhost:3000/api/groups/4/like
+
+
+###
+
+GET http://localhost:3000/api/groups/4/is-public
