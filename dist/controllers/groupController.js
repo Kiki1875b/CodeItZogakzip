@@ -5,6 +5,7 @@ exports.getGroup = getGroup;
 exports.updateGroup = updateGroup;
 exports.deleteGroup = deleteGroup;
 exports.getGroupInfo = getGroupInfo;
+exports.groupLike = groupLike;
 const client_1 = require("@prisma/client");
 const groupService_1 = require("../service/groupService");
 const badgeService_1 = require("../service/badgeService");
@@ -136,4 +137,19 @@ async function getGroupInfo(groupID) {
         createdAt: group.CreatedDate,
         introduction: group.GIntro
     });
+}
+async function groupLike(groupID) {
+    const group = await (0, groupService_1.findGroupById)(groupID);
+    if (!group) {
+        throw { status: 404, message: "존재하지 않는 그룹입니다." };
+    }
+    await prisma.group.update({
+        where: { GID: groupID },
+        data: {
+            GLikes: {
+                increment: 1,
+            },
+        },
+    });
+    return { message: "그룹 공감하기 성공" };
 }

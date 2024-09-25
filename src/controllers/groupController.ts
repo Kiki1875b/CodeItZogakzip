@@ -150,6 +150,7 @@ export async function deleteGroup(groupID: number, password : string){
 
 export async function getGroupInfo(groupID: number){
   const group = await findGroupById(groupID);
+
   if(!group){
     throw { status : 404 , message : "존재하지 않는 그룹입니다."};
   }
@@ -168,4 +169,23 @@ export async function getGroupInfo(groupID: number){
     introduction : group.GIntro
   });
 
+}
+
+export async function groupLike(groupID: number){
+  const group = await findGroupById(groupID);
+  
+  if(!group){
+    throw {status: 404, message : "존재하지 않는 그룹입니다."};
+  }
+
+  await prisma.group.update({
+    where: { GID: groupID },
+    data: {
+      GLikes:{
+        increment: 1,
+      },
+    },
+  });
+  
+  return { message : "그룹 공감하기 성공" };
 }
