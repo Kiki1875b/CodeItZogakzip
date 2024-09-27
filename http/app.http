@@ -1,25 +1,26 @@
-POST http://localhost:3000/api/groups
+POST http://localhost:5000/api/groups
 Content-Type: application/json
 
 {
   "name": "testing",
-  "image": "http://example.com/image.jpg",
-  "intro": "This is a test group.",
+  "password": "securepassword",
+  "imageUrl": "http://example.com/image.jpg",
   "isPublic": true,
-  "password": "securepassword"
+  "introduction": "This is a test group."
+  
 }
 
 
 ###
 
 
-GET http://localhost:3000/api/groups?page=1&isPublic=false
+GET http://localhost:5000/api/groups?page=1&isPublic=false
 
 
 
 ###
 
-PUT http://localhost:3000/api/groups/5
+PUT http://localhost:5000/api/groups/827
 Content-Type: application/json
 
 {
@@ -33,7 +34,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/api/groups/24
+DELETE http://localhost:5000/api/groups/8299
 Content-Type: application/json
 
 {
@@ -42,7 +43,7 @@ Content-Type: application/json
 
 
 ### 
-GET http://localhost:3000/api/groups/3
+GET http://localhost:5000/api/groups/822
 
 
 
@@ -50,7 +51,7 @@ GET http://localhost:3000/api/groups/3
 
 ###
 
-POST http://localhost:3000/api/groups/3/verify-password
+POST http://localhost:5000/api/groups/822/verify-password
 Content-Type: application/json
 
 {
@@ -60,7 +61,7 @@ Content-Type: application/json
 
 ### 
 
-POST http://localhost:3000/api/groups/4/like
+POST http://localhost:5000/api/groups/822/like
 
 
 ###

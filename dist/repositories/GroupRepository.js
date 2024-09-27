@@ -1,0 +1,70 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GroupRepository = void 0;
+const Group_1 = require("../model/Group");
+class GroupRepository {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async findById(id) {
+        const group = await this.prisma.group.findUnique({
+            where: {
+                GID: id,
+            },
+        });
+        if (!group) {
+            return null;
+        }
+        return Group_1.Group.fromPrisma(group);
+    }
+    async create(groupData) {
+        const newGroup = await this.prisma.group.create({ data: groupData });
+        return Group_1.Group.fromPrisma(newGroup);
+    }
+    async update(id, groupData) {
+        const updatedGroup = await this.prisma.group.update({
+            where: { GID: id },
+            data: groupData,
+        });
+        return Group_1.Group.fromPrisma(updatedGroup);
+    }
+    async delete(id) {
+        await this.prisma.group.delete({ where: { GID: id } });
+    }
+    async findMany(params) {
+        const { page, pageSize, sortBy, keyword, isPublic } = params;
+        const offset = (page - 1) * pageSize;
+        const where = {
+            GName: { contains: keyword },
+            IsPublic: isPublic,
+        };
+        const [groups, totalCount] = await Promise.all([
+            this.prisma.group.findMany({
+                where: where,
+                skip: offset,
+                take: pageSize,
+                orderBy: this.getOrderBy(sortBy),
+            }),
+            this.prisma.group.count({ where }),
+        ]);
+        return {
+            groups: groups.map(Group_1.Group.fromPrisma),
+            totalCount,
+        };
+    }
+    getOrderBy(sortBy) {
+        switch (sortBy) {
+            case 'latest':
+                return { CreatedDate: 'desc' };
+            case 'mostLiked':
+                return { GLikes: 'desc' };
+            case 'mostBadge':
+                return { GBadgeCount: 'desc' };
+            case 'postCount':
+                return { PostCount: 'desc' };
+            default:
+                return { CreatedDate: 'desc' };
+        }
+    }
+}
+exports.GroupRepository = GroupRepository;

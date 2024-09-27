@@ -20,7 +20,6 @@ router.post('/groups', async (req, res) => {
     }
 });
 router.get('/groups', async (req, res) => {
-    console.log("groups");
     try {
         const page = parseInt(req.query.page) || 1;
         const pageSize = 10;
