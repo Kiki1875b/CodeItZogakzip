@@ -21,7 +21,7 @@ router.post('/groups', async(req,res) =>{
 });
 
 router.get('/groups', async(req, res) => {
-  console.log("groups");
+
   try{
     
     const page = parseInt(req.query.page as string) || 1;
@@ -157,4 +157,5 @@ router.get('/groups/:GID/is-public', async (req,res) => {
     return res.status(404).json({ message: "Error Fetching Group Public Status" });
   }
 });
+
 export default router;

@@ -20,7 +20,6 @@ const updateGroupInfo = async (groupId, group) => {
 };
 exports.updateGroupInfo = updateGroupInfo;
 const deleteGroupById = async (groupId) => {
-    console.log("deleting");
     return await prisma.group.delete({
         where: { GID: groupId },
     });
