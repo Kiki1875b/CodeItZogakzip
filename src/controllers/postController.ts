@@ -1,423 +1,264 @@
-import { Request, Response } from 'express';
-import prisma from '../../prisma/client';
+// src/controllers/postController.ts
 
-export const createPost = async (req: Request, res: Response) => {
-  const { GID } = req.params;
-  const {
-    Nickname,
-    Title,
-    Content,
-    PPassword,
-    Image,
-    Tags,
-    Location,
-    MemoryMoment,
-    IsPublic,
-  } = req.body;
+import { Request, Response } from 'express';
+import prisma from '../prisma';
+
+export const getPostsByGroup = async (req: Request, res: Response) => {
+  const { groupId } = req.params;
 
   try {
-    // 그룹 존재 여부 확인
-    const group = await prisma.group.findUnique({
-      where: { GID: Number(GID) },
+    const posts = await prisma.post.findMany({
+      where: {
+        GID: parseInt(groupId, 10),
+      },
+      orderBy: {
+        CreatedDate: 'desc',
+      },
+      select: {
+        PostID: true,
+        Nickname: true,
+        Title: true,
+        Content: true,
+        IsPublic: true,
+        LikeCount: true,
+        CommentCount: true,
+        CreatedDate: true,
+      },
     });
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error('게시글 목록 조회 오류:', error);
+    res.status(500).json({ error: '게시글 목록 조회에 실패했습니다.' });
+  }
+};
 
-    if (!group) {
-      return res.status(404).json({ message: '그룹을 찾을 수 없습니다.' });
-    }
+// 게시글 등록
+export const createPost = async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const { Nickname, Title, Content, IsPublic, PPassword, Image, Location, MemoryMoment } = req.body;
 
-    // 게시글 생성
-    const newPost = await prisma.post.create({
+  if (!Nickname || !Title || !Content || typeof IsPublic !== 'boolean') {
+    return res.status(400).json({ error: '필수 필드가 누락되었습니다.' });
+  }
+
+  try {
+    const post = await prisma.post.create({
       data: {
-        GID: Number(GID),
+        GID: parseInt(groupId, 10),
         Nickname,
         Title,
         Content,
-        PPassword,
-        Image,
-        Location,
-        MemoryMoment: new Date(MemoryMoment),
         IsPublic,
-        LikeCount: 0,
-        CommentCount: 0,
-        postTags: {
-          create: Tags.map((tagName: string) => ({
-            tag: {
-              connectOrCreate: {
-                where: { Name: tagName },
-                create: { Name: tagName },
-              },
-            },
-          })),
-        },
-      },
-      include: {
-        postTags: {
-          include: {
-            tag: true,
-          },
-        },
+        PPassword: PPassword || '',
+        Image: Image || null,
+        Location: Location || null,
+        MemoryMoment: MemoryMoment ? new Date(MemoryMoment) : new Date(),
       },
     });
-
-    res.status(200).json({
-      PostID: newPost.PostID,
-      GID: newPost.GID,
-      Nickname: newPost.Nickname,
-      Title: newPost.Title,
-      Content: newPost.Content,
-      Image: newPost.Image,
-      Tags: newPost.postTags.map((pt) => pt.tag.Name),
-      Location: newPost.Location,
-      MemoryMoment: newPost.MemoryMoment.toISOString().split('T')[0],
-      IsPublic: newPost.IsPublic,
-      LikeCount: newPost.LikeCount,
-      CommentCount: newPost.CommentCount,
-      CreatedDate: newPost.CreatedDate,
-    });
+    res.status(201).json(post);
   } catch (error) {
     console.error('게시글 생성 오류:', error);
-    res.status(400).json({ message: '잘못된 요청입니다' });
+    res.status(500).json({ error: '게시글 생성에 실패했습니다.' });
   }
 };
 
-// 게시글 조회 함수 추가
+// 게시글 목록 조회
 export const getPosts = async (req: Request, res: Response) => {
-    const { groupId } = req.params;
-    const {
-      page = 1,
-      pageSize = 10,
-      sortBy = 'latest',
-      keyword = '',
-      isPublic,
-    } = req.query;
-  
-    try {
-      // 그룹 존재 여부 확인
-      const group = await prisma.group.findUnique({
-        where: { GID: Number(groupId) },
-      });
-  
-      if (!group) {
-        return res.status(404).json({ message: '그룹을 찾을 수 없습니다.' });
-      }
-  
-      // 페이지네이션을 위한 숫자 변환
-      const currentPage = Number(page);
-      const take = Number(pageSize);
-      const skip = (currentPage - 1) * take;
-  
-      // 정렬 기준 설정
-      let orderBy = {};
-      if (sortBy === 'latest') {
-        orderBy = { CreatedDate: 'desc' };
-      } else if (sortBy === 'mostCommented') {
-        orderBy = { CommentCount: 'desc' };
-      } else if (sortBy === 'mostLiked') {
-        orderBy = { LikeCount: 'desc' };
-      }
-  
-      // 필터 조건 설정
-      const whereCondition: any = {
-        GID: Number(groupId),
-        Title: {
-          contains: keyword as string,
-        },
-      };
-  
-      if (isPublic !== undefined) {
-        whereCondition.IsPublic = isPublic === 'true';
-      }
-  
-      // 총 게시글 수 구하기
-      const totalItemCount = await prisma.post.count({
-        where: whereCondition,
-      });
-  
-      // 총 페이지 수 계산
-      const totalPages = Math.ceil(totalItemCount / take);
-  
-      // 게시글 조회
-      const posts = await prisma.post.findMany({
-        where: whereCondition,
-        skip,
-        take,
-        orderBy,
-        include: {
-          postTags: {
-            include: {
-              tag: true,
-            },
-          },
-        },
-      });
-  
-      // 응답 데이터 형식에 맞게 변환
-      const data = posts.map((post) => ({
-        id: post.PostID,
-        nickname: post.Nickname,
-        title: post.Title,
-        imageUrl: post.Image,
-        tags: post.postTags.map((pt) => pt.tag.Name),
-        location: post.Location,
-        moment: post.MemoryMoment.toISOString().split('T')[0],
-        isPublic: post.IsPublic,
-        likeCount: post.LikeCount,
-        commentCount: post.CommentCount,
-        createdAt: post.CreatedDate,
-      }));
-  
-      res.status(200).json({
-        currentPage,
-        totalPages,
-        totalItemCount,
-        data,
-      });
-    } catch (error) {
-      console.error('게시글 조회 오류:', error);
-      res.status(400).json({ message: '잘못된 요청입니다' });
-    }
-  };
-
-  // 게시글 수정 함수 추가
-export const updatePost = async (req: Request, res: Response) => {
-  const { postId } = req.params;
-  const {
-    nickname,
-    title,
-    content,
-    postPassword,
-    imageUrl,
-    tags,
-    location,
-    moment,
-    isPublic,
-  } = req.body;
+  const { groupId } = req.params;
 
   try {
-    // 게시글 존재 여부 확인
-    const existingPost = await prisma.post.findUnique({
-      where: { PostID: Number(postId) },
-      include: {
-        postTags: {
-          include: {
-            tag: true,
-          },
-        },
+    const posts = await prisma.post.findMany({
+      where: {
+        GID: parseInt(groupId, 10),
       },
+      orderBy: {
+        CreatedDate: 'desc',
+      },
+      select: {
+        PostID: true,
+        Nickname: true,
+        Title: true,
+        Content: true,
+        IsPublic: true,
+        LikeCount: true,
+        CommentCount: true,
+        CreatedDate: true,
+      },
+    });
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error('게시글 목록 조회 오류:', error);
+    res.status(500).json({ error: '게시글 목록 조회에 실패했습니다.' });
+  }
+};
+
+// 게시글 수정
+export const updatePost = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { Title, Content, IsPublic, PPassword, Image, Location, MemoryMoment } = req.body;
+
+  try {
+    const existingPost = await prisma.post.findUnique({
+      where: { PostID: parseInt(postId, 10) },
     });
 
     if (!existingPost) {
-      return res.status(404).json({ message: '존재하지 않습니다' });
+      return res.status(404).json({ error: '게시글을 찾을 수 없습니다.' });
     }
 
-    // 비밀번호 확인
-    const isPasswordValid = existingPost.PPassword === postPassword;
-    // 만약 비밀번호를 해싱하여 저장했다면 bcrypt.compare를 사용해야 합니다.
-    // const isPasswordValid = await bcrypt.compare(postPassword, existingPost.PPassword);
-
-    if (!isPasswordValid) {
-      return res.status(403).json({ message: '비밀번호가 틀렸습니다' });
-    }
-
-    // 태그 업데이트 처리
-    // 기존 태그를 모두 삭제하고 새로운 태그로 대체합니다.
-    await prisma.post_Tag.deleteMany({
-      where: { PostID: existingPost.PostID },
-    });
-
-    // 새로운 태그 생성 및 연결
-    const newTags = tags.map((tagName: string) => ({
-      tag: {
-        connectOrCreate: {
-          where: { Name: tagName },
-          create: { Name: tagName },
-        },
-      },
-    }));
-
-    // 게시글 업데이트
     const updatedPost = await prisma.post.update({
-      where: { PostID: Number(postId) },
+      where: { PostID: parseInt(postId, 10) },
       data: {
-        Nickname: nickname,
-        Title: title,
-        Content: content,
-        Image: imageUrl,
-        Location: location,
-        MemoryMoment: new Date(moment),
-        IsPublic: isPublic,
-        postTags: {
-          create: newTags,
-        },
-      },
-      include: {
-        postTags: {
-          include: {
-            tag: true,
-          },
-        },
+        Title: Title || existingPost.Title,
+        Content: Content || existingPost.Content,
+        IsPublic: typeof IsPublic === 'boolean' ? IsPublic : existingPost.IsPublic,
+        PPassword: PPassword !== undefined ? PPassword : existingPost.PPassword,
+        Image: Image !== undefined ? Image : existingPost.Image,
+        Location: Location !== undefined ? Location : existingPost.Location,
+        MemoryMoment: MemoryMoment ? new Date(MemoryMoment) : existingPost.MemoryMoment,
       },
     });
-
-    // 응답 데이터 구성
-    res.status(200).json({
-      id: updatedPost.PostID,
-      groupId: updatedPost.GID,
-      nickname: updatedPost.Nickname,
-      title: updatedPost.Title,
-      content: updatedPost.Content,
-      imageUrl: updatedPost.Image,
-      tags: updatedPost.postTags.map((pt) => pt.tag.Name),
-      location: updatedPost.Location,
-      moment: updatedPost.MemoryMoment.toISOString().split('T')[0],
-      isPublic: updatedPost.IsPublic,
-      likeCount: updatedPost.LikeCount,
-      commentCount: updatedPost.CommentCount,
-      createdAt: updatedPost.CreatedDate,
-    });
+    res.status(200).json(updatedPost);
   } catch (error) {
     console.error('게시글 수정 오류:', error);
-    res.status(400).json({ message: '잘못된 요청입니다' });
+    res.status(500).json({ error: '게시글 수정에 실패했습니다.' });
   }
 };
 
-
-// 게시글 수정 함수 추가
-export const updatePost = async (req: Request, res: Response) => {
-    const { postId } = req.params;
-    const {
-      nickname,
-      title,
-      content,
-      postPassword,
-      imageUrl,
-      tags,
-      location,
-      moment,
-      isPublic,
-    } = req.body;
-  
-    try {
-      // 게시글 존재 여부 확인
-      const existingPost = await prisma.post.findUnique({
-        where: { PostID: Number(postId) },
-        include: {
-          postTags: {
-            include: {
-              tag: true,
-            },
-          },
-        },
-      });
-  
-      if (!existingPost) {
-        return res.status(404).json({ message: '존재하지 않습니다' });
-      }
-  
-      // 비밀번호 확인
-      const isPasswordValid = existingPost.PPassword === postPassword;
-      // 만약 비밀번호를 해싱하여 저장했다면 bcrypt.compare를 사용해야 합니다.
-      // const isPasswordValid = await bcrypt.compare(postPassword, existingPost.PPassword);
-  
-      if (!isPasswordValid) {
-        return res.status(403).json({ message: '비밀번호가 틀렸습니다' });
-      }
-  
-      // 태그 업데이트 처리
-      // 기존 태그를 모두 삭제하고 새로운 태그로 대체합니다.
-      await prisma.post_Tag.deleteMany({
-        where: { PostID: existingPost.PostID },
-      });
-  
-      // 새로운 태그 생성 및 연결
-      const newTags = tags.map((tagName: string) => ({
-        tag: {
-          connectOrCreate: {
-            where: { Name: tagName },
-            create: { Name: tagName },
-          },
-        },
-      }));
-  
-      // 게시글 업데이트
-      const updatedPost = await prisma.post.update({
-        where: { PostID: Number(postId) },
-        data: {
-          Nickname: nickname,
-          Title: title,
-          Content: content,
-          Image: imageUrl,
-          Location: location,
-          MemoryMoment: new Date(moment),
-          IsPublic: isPublic,
-          postTags: {
-            create: newTags,
-          },
-        },
-        include: {
-          postTags: {
-            include: {
-              tag: true,
-            },
-          },
-        },
-      });
-  
-      // 응답 데이터 구성
-      res.status(200).json({
-        id: updatedPost.PostID,
-        groupId: updatedPost.GID,
-        nickname: updatedPost.Nickname,
-        title: updatedPost.Title,
-        content: updatedPost.Content,
-        imageUrl: updatedPost.Image,
-        tags: updatedPost.postTags.map((pt) => pt.tag.Name),
-        location: updatedPost.Location,
-        moment: updatedPost.MemoryMoment.toISOString().split('T')[0],
-        isPublic: updatedPost.IsPublic,
-        likeCount: updatedPost.LikeCount,
-        commentCount: updatedPost.CommentCount,
-        createdAt: updatedPost.CreatedDate,
-      });
-    } catch (error) {
-      console.error('게시글 수정 오류:', error);
-      res.status(400).json({ message: '잘못된 요청입니다' });
-    }
-  };
-
-
-  // 게시글 삭제 함수
+// 게시글 삭제
 export const deletePost = async (req: Request, res: Response) => {
-    const { postId } = req.params;
-    const { postPassword } = req.body;
-  
-    try {
-      // 게시글 존재 여부 확인
-      const existingPost = await prisma.post.findUnique({
-        where: { PostID: Number(postId) },
-      });
-  
-      if (!existingPost) {
-        return res.status(404).json({ message: '존재하지 않습니다' });
-      }
-  
-      // 비밀번호 확인
-      const isPasswordValid = existingPost.PPassword === postPassword;
-      // 비밀번호가 해싱되어 있는 경우:
-      // const isPasswordValid = await bcrypt.compare(postPassword, existingPost.PPassword);
-  
-      if (!isPasswordValid) {
-        return res.status(403).json({ message: '비밀번호가 틀렸습니다' });
-      }
-  
-      // 게시글 삭제
-      await prisma.post.delete({
-        where: { PostID: Number(postId) },
-      });
-  
-      res.status(200).json({ message: '게시글 삭제 성공' });
-    } catch (error) {
-      console.error('게시글 삭제 오류:', error);
-      res.status(400).json({ message: '잘못된 요청입니다' });
+  const { postId } = req.params;
+
+  try {
+    const existingPost = await prisma.post.findUnique({
+      where: { PostID: parseInt(postId, 10) },
+    });
+
+    if (!existingPost) {
+      return res.status(404).json({ error: '게시글을 찾을 수 없습니다.' });
     }
-  };
+
+    await prisma.post.delete({
+      where: { PostID: parseInt(postId, 10) },
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error('게시글 삭제 오류:', error);
+    res.status(500).json({ error: '게시글 삭제에 실패했습니다.' });
+  }
+};
+
+// 게시글 상세 정보 조회
+export const getPostDetail = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { PostID: parseInt(postId, 10) },
+      include: {
+        comments: {
+          select: {
+            CommentID: true,
+            Nickname: true,
+            Content: true,
+            CreatedDate: true,
+          },
+          orderBy: { CreatedDate: 'asc' },
+        },
+        postTags: {
+          include: {
+            tag: {
+              select: { TagID: true, Name: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: '게시글을 찾을 수 없습니다.' });
+    }
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error('게시글 상세 정보 조회 오류:', error);
+    res.status(500).json({ error: '게시글 상세 정보 조회에 실패했습니다.' });
+  }
+};
+
+// 게시글 조회 권한 확인
+export const verifyPassword = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: '비밀번호가 필요합니다.' });
+  }
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { PostID: parseInt(postId, 10) },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: '게시글을 찾을 수 없습니다.' });
+    }
+
+    if (post.IsPublic) {
+      return res.status(200).json({ access: true });
+    }
+
+    if (post.PPassword === password) {
+      return res.status(200).json({ access: true });
+    }
+
+    return res.status(403).json({ access: false, error: '비밀번호가 일치하지 않습니다.' });
+  } catch (error) {
+    console.error('게시글 조회 권한 확인 오류:', error);
+    res.status(500).json({ error: '게시글 조회 권한 확인에 실패했습니다.' });
+  }
+};
+
+// 게시글 공감하기
+export const likePost = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+
+  try {
+    const updatedPost = await prisma.post.update({
+      where: { PostID: parseInt(postId, 10) },
+      data: {
+        LikeCount: {
+          increment: 1,
+        },
+      },
+      select: {
+        LikeCount: true,
+      },
+    });
+    res.status(200).json({ likes: updatedPost.LikeCount });
+  } catch (error) {
+    console.error('게시글 공감하기 오류:', error);
+    res.status(500).json({ error: '게시글 공감하기에 실패했습니다.' });
+  }
+};
+
+// 게시글 공개 여부 확인
+export const checkIsPublic = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { PostID: parseInt(postId, 10) },
+      select: { IsPublic: true },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: '게시글을 찾을 수 없습니다.' });
+    }
+
+    res.status(200).json({ isPublic: post.IsPublic });
+  } catch (error) {
+    console.error('게시글 공개 여부 확인 오류:', error);
+    res.status(500).json({ error: '게시글 공개 여부 확인에 실패했습니다.' });
+  }
+};

@@ -1,14 +1,25 @@
-import { Router } from 'express';
+// src/routes/commentRoutes.ts
+
+import express from 'express';
 import {
   createComment,
-  getCommentsByPostId,
+  updateComment,
   deleteComment,
+  getComments,
 } from '../controllers/commentController';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/', createComment);
-router.get('/post/:PostID', getCommentsByPostId);
-router.delete('/:CommentID', deleteComment);
+// 댓글 등록
+router.post('/api/posts/:postId/comments', createComment);
+
+// 댓글 수정
+router.put('/api/comments/:commentId', updateComment);
+
+// 댓글 삭제
+router.delete('/api/comments/:commentId', deleteComment);
+
+// 댓글 목록 조회
+router.get('/api/posts/:postId/comments', getComments);
 
 export default router;

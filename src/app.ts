@@ -1,26 +1,13 @@
 // src/app.ts
 import express from 'express';
-<<<<<<< HEAD
 import postRoutes from './routes/postRoutes';
-// 다른 라우트들...
-=======
 import prisma from './prisma';
 import groupRoutes from './routes/testGroupRoutes';
->>>>>>> main
+import commentRoutes from './routes/commentRoutes';
 import cors from 'cors';
 
 const app = express();
 
-<<<<<<< HEAD
-app.use(cors());
-app.use(express.json());
-
-app.use('/', postRoutes);
-// 다른 라우트들...
-
-const PORT = process.env.PORT || 3000;
-
-=======
 app.use(express.json());
 
 app.use(cors({
@@ -33,14 +20,19 @@ app.use((req, res, next) => {
   next();
 });
 
+
 const PORT = process.env.PORT || 5000;
 
 
 app.use('/api', groupRoutes); 
+app.use('/api/posts', postRoutes);
+app.use('/api/comments',commentRoutes);
 
+// 기본 라우트
+app.get('/', (req, res) => {
+  res.send('API 서버가 정상적으로 작동 중입니다.');
+});
 
-
->>>>>>> main
 app.listen(PORT, () => {
   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
