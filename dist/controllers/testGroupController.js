@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroupController = void 0;
 const createGroupDTO_1 = require("../DTO/createGroupDTO");
 class GroupController {
-    constructor(groupService) {
+    constructor(groupService, badgeService) {
         this.groupService = groupService;
+        this.badgeService = badgeService;
     }
     async createGroup(req, res) {
         const { name, password, imageUrl, isPublic, introduction } = req.body;
@@ -54,8 +55,9 @@ class GroupController {
         const groupId = parseInt(req.params.GID, 10);
         try {
             const groupInfo = await this.groupService.getGroupInfo(groupId);
+            await this.badgeService.check7Consecutive(groupId);
             if (!groupInfo.isPublic) {
-                return res.status(302).json({ message: '비공개 그룹입니다.' });
+                return res.status(302).json({ message: '비공개 그룹입니다. 비밀번호를 입력해 주세요.' });
             }
             res.status(200).json({ groupInfo });
         }
