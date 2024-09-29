@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { GroupService } from '../service/testGroupService';
+import {BadgeService} from'../service/testBadgeService';
 import { CreateGroupDto, GroupQueryDto, UpdateGroupDto } from '../DTO/createGroupDTO';
 
 
 export class GroupController{
-  constructor(private groupService : GroupService){}
+  constructor(private groupService : GroupService, private badgeService: BadgeService){}
 
   async createGroup(req : Request, res : Response){
     const {name, password, imageUrl, isPublic, introduction } = req.body;
