@@ -13,7 +13,7 @@ class BadgeRepository {
         });
         return groupBadges.map(gb => Badge_1.Badge.fromPrisma(gb.badge));
     }
-    async createGroubBadge(groupId, badgeId) {
+    async createGroupBadge(groupId, badgeId) {
         await this.prisma.groupBadge.create({
             data: { GID: groupId, BadgeID: badgeId },
         });
