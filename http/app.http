@@ -1,0 +1,69 @@
+POST http://localhost:5000/api/groups
+Content-Type: application/json
+
+{
+  "name": "testing",
+  "password": "securepassword",
+  "imageUrl": "http://example.com/image.jpg",
+  "isPublic": true,
+  "introduction": "This is a test group."
+  
+}
+
+
+###
+
+
+GET http://localhost:5000/api/groups?page=1&isPublic=false
+
+
+
+###
+
+PUT http://localhost:5000/api/groups/827
+Content-Type: application/json
+
+{
+  "name": "Updated third Group Name",
+  "password": "securepassword",
+  "imageUrl": "https://example.com/new-image.jpg",
+  "isPublic": true,
+  "introduction": "Updated introduction text"
+}
+
+
+###
+
+DELETE http://localhost:5000/api/groups/8299
+Content-Type: application/json
+
+{
+  "password" : "securepassword"
+}
+
+
+### 
+GET http://localhost:5000/api/groups/626
+
+
+
+
+
+###
+
+POST http://localhost:5000/api/groups/822/verify-password
+Content-Type: application/json
+
+{
+  "password" : "securepassword"
+}
+
+
+### 
+
+POST http://localhost:5000/api/groups/822/like
+
+
+###
+
+GET http://localhost:3000/api/groups/4/is-public

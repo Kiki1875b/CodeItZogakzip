@@ -19,7 +19,8 @@
     "start": "node dist/app.js",
     "dev": "ts-node src/app.ts",
     "format": "prettier --write .",
-    "db:migrate": "sequelize-cli db:migrate"
+    "db:migrate": "sequelize-cli db:migrate",
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
