@@ -26,30 +26,24 @@ class BadgeService {
             }
         }
     }
-    // Group 에 alreadyChecked 같은 bool 값 넣어서 부하 줄이기 ?
-    //test 필요. 
+    // Group 에 alreadyChecked 같은 bool 값 넣어서 부하 줄이기?
     async check7Consecutive(groupId) {
         const group = await this.groupRepository.findById(groupId);
         const badges = await this.badgeRepository.findGroupBadge(groupId);
         let consecutiveDays = 1;
         if (!badges.some(badge => badge.name === "7일 연속 추억 등록")) {
-            console.log("not exists");
             const dates = await this.postRepository.get7UniqueDates(groupId);
             if (dates) {
-                console.log(dates);
                 for (let i = 1; i < dates.length; i++) {
                     const prev = dates[i - 1];
                     const cur = dates[i];
-                    console.log((prev.getTime() - cur.getTime()) / (1000 * 3600 * 24));
                     if ((prev.getTime() - cur.getTime()) / (1000 * 3600 * 24) == 1) {
                         consecutiveDays++;
                     }
                     else {
                         consecutiveDays = 1;
-                        console.log("failed");
                     }
                     if (consecutiveDays >= 7) {
-                        console.log("success");
                         await this.badgeRepository.createGroupBadge(groupId, 1);
                     }
                 }

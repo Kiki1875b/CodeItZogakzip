@@ -4,6 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const multer_1 = __importDefault(require("multer"));
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 const testGroupController_1 = require("../controllers/testGroupController");
 const testGroupService_1 = require("../service/testGroupService");
 const testBadgeService_1 = require("../service/testBadgeService");
@@ -12,6 +15,22 @@ const BadgeRepository_1 = require("../repositories/BadgeRepository");
 const PostRepository_1 = require("../repositories/PostRepository");
 const client_1 = require("@prisma/client");
 const router = express_1.default.Router();
+const uploadDir = path_1.default.join(__dirname, '../uploads/groups/main/');
+if (!fs_1.default.existsSync(uploadDir)) {
+    fs_1.default.mkdirSync(uploadDir, { recursive: true });
+}
+const storage = multer_1.default.diskStorage({
+    destination: function (req, file, cb) {
+        // 파일이 저장될 디렉토리 지정
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        // 파일 이름을 고유하게 생성
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        // 원본 파일 이름과 고유한 접미사를 결합
+        cb(null, uniqueSuffix + '-' + file.originalname);
+    }
+});
 const prisma = new client_1.PrismaClient();
 const groupRepository = new GroupRepository_1.GroupRepository(prisma);
 const badgeRepository = new BadgeRepository_1.BadgeRepository(prisma);

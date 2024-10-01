@@ -3,6 +3,7 @@ import prisma from './prisma';
 import groupRoutes from './routes/testGroupRoutes';
 import cors from 'cors';
 
+
 const app = express();
 
 app.use(express.json());

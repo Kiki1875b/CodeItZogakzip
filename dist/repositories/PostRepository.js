@@ -7,7 +7,7 @@ class PostRepository {
     }
     async get7UniqueDates(groupId) {
         const query = await this.prisma.$queryRaw `
-    SELECT DISTINCT DATE(MemoryMoment) as date 
+    SELECT DISTINCT DATE(CreatedDate) as date 
     FROM \`Posts\`
     WHERE GID = ${groupId}
     ORDER BY date DESC 
