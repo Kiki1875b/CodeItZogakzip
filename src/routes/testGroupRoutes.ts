@@ -1,4 +1,7 @@
 import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { GroupController } from '../controllers/testGroupController';
 import { GroupService } from '../service/testGroupService';
 import { BadgeService } from '../service/testBadgeService';
@@ -8,6 +11,25 @@ import { PostRepository } from '../repositories/PostRepository';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
+
+const uploadDir = path.join(__dirname, '../uploads/groups/main/');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // 파일이 저장될 디렉토리 지정
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // 파일 이름을 고유하게 생성
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    // 원본 파일 이름과 고유한 접미사를 결합
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+
+
 const prisma = new PrismaClient();
 const groupRepository = new GroupRepository(prisma);
 const badgeRepository = new BadgeRepository(prisma);
