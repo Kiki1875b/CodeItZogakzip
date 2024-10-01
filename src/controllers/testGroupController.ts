@@ -8,11 +8,12 @@ export class GroupController{
   constructor(private groupService : GroupService, private badgeService: BadgeService){}
 
   async createGroup(req : Request, res : Response){
-    const {name, password, imageUrl, isPublic, introduction } = req.body;
+    const {name, password,  isPublic, introduction } = req.body;
+    const imageFile = req.file;
 
-    try{
-      const createGroupDto = new CreateGroupDto(name, password, isPublic, imageUrl,  introduction);
-
+    try{ 
+      const imageUrl = imageFile ? `/uploads/groups/main/${imageFile.filename}` : undefined;
+      const createGroupDto = new CreateGroupDto(name, password, isPublic, imageUrl, introduction);
       const newGroup = await this.groupService.createGroup(createGroupDto);
       res.status(200).json(newGroup);
     }catch(error){

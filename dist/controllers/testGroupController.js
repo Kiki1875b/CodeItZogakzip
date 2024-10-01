@@ -8,8 +8,10 @@ class GroupController {
         this.badgeService = badgeService;
     }
     async createGroup(req, res) {
-        const { name, password, imageUrl, isPublic, introduction } = req.body;
+        const { name, password, isPublic, introduction } = req.body;
+        const imageFile = req.file;
         try {
+            const imageUrl = imageFile ? `/uploads/groups/main/${imageFile.filename}` : undefined;
             const createGroupDto = new createGroupDTO_1.CreateGroupDto(name, password, isPublic, imageUrl, introduction);
             const newGroup = await this.groupService.createGroup(createGroupDto);
             res.status(200).json(newGroup);
