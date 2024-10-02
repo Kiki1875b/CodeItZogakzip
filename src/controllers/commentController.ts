@@ -5,6 +5,7 @@ import prisma from '../prisma';
 
 // 댓글 등록
 export const createComment = async (req: Request, res: Response) => {
+  
   const { postId } = req.params;
   const { Nickname, Content, Password } = req.body;
 

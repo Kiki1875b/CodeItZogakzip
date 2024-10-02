@@ -7,8 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 const testGroupRoutes_1 = __importDefault(require("./routes/testGroupRoutes"));
-const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
-
+const testCommentRoutes_1 = __importDefault(require("./routes/testCommentRoutes"));
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -22,8 +21,11 @@ app.use((req, res, next) => {
 });
 const PORT = process.env.PORT || 5000;
 app.use('/api', testGroupRoutes_1.default);
-app.use('/api/posts', postRoutes_1.default);
-app.use('/api/comments', commentRoutes_1.default);
+app.use('/api/groups/:GID/posts', postRoutes_1.default);
+app.use('/api/posts/', postRoutes_1.default);
+app.use('/api/posts/:postId/comments', testCommentRoutes_1.default);
+// app.use('/api/posts', postRoutes);
+app.use('/api/comments', testCommentRoutes_1.default);
 // 기본 라우트
 app.get('/', (req, res) => {
     res.send('API 서버가 정상적으로 작동 중입니다.');

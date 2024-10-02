@@ -1,5 +1,4 @@
 "use strict";
-// src/routes/postRoutes.ts
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -13,21 +12,23 @@ const BadgeRepository_1 = require("../repositories/BadgeRepository");
 const testBadgeService_1 = require("../service/testBadgeService");
 const GroupRepository_1 = require("../repositories/GroupRepository");
 const testGroupService_1 = require("../service/testGroupService");
+const CommentRepository_1 = require("../repositories/CommentRepository");
+const testCommentService_1 = require("../service/testCommentService");
+const testCommentController_1 = require("../controllers/testCommentController");
 const router = express_1.default.Router({ mergeParams: true });
 const prisma = new client_1.PrismaClient();
 const groupRepository = new GroupRepository_1.GroupRepository(prisma);
 const badgeRepository = new BadgeRepository_1.BadgeRepository(prisma);
 const postRepository = new PostRepository_1.PostRepository(prisma);
+const commentRepository = new CommentRepository_1.CommentRepository(prisma);
+const commentService = new testCommentService_1.CommentService(groupRepository, commentRepository);
 const badgeService = new testBadgeService_1.BadgeService(badgeRepository, groupRepository, postRepository);
 const groupService = new testGroupService_1.GroupService(groupRepository, badgeRepository);
 const postService = new postService_1.PostService(postRepository);
 const postController = new testPostController_1.PostController(groupService, postService);
-router.post('/', postController.createPost.bind(postController));
-router.get('/', postController.getPosts.bind(postController));
-router.put('/:postId', postController.updatePost.bind(postController));
-router.delete('/:postId', postController.deletePost.bind(postController));
-router.get('/:postId', postController.postDetail.bind(postController));
-router.post('/:postId/verify-password', postController.verifyPassword.bind(postController));
-router.post('/:postId/like', postController.postLike.bind(postController));
-router.get('/:postId/is-public', postController.isPublic.bind(postController));
+const commentController = new testCommentController_1.CommentController(commentService);
+router.post('/', commentController.createComment.bind(commentController));
+router.get('/', commentController.getComments.bind(commentController));
+router.put('/:commentId', commentController.updateComment.bind(commentController));
+router.delete('/:commentId', commentController.deleteComment.bind(commentController));
 exports.default = router;

@@ -38,7 +38,7 @@ const badgeService = new BadgeService(badgeRepository, groupRepository, postRepo
 const groupService = new GroupService(groupRepository, badgeRepository);
 const groupController = new GroupController(groupService, badgeService);
 
-router.post('/groups', groupController.createGroup.bind(groupController));
+router.post('/groups', multer({storage}).single('file'), groupController.createGroup.bind(groupController));
 router.get('/groups', groupController.getGroups.bind(groupController));
 router.put('/groups/:GID', groupController.updateGroup.bind(groupController));
 router.delete('/groups/:GID', groupController.deleteGroup.bind(groupController));
