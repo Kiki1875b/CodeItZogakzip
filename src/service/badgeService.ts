@@ -27,9 +27,10 @@ export async function checkNumOfMemories(groupId: number){
   if(group.PostCount >= 20){
     const badgeNames = await findGroupBadge(groupId);
     if(!badgeNames.includes("20개 이상 등록")) {
-      await giveBadge(groupId, 2); // 2 는 추후 정말 사용할 badge id를 등록
+      await giveBadge(groupId, 1); // 1 은 추후 정말 사용할 badge id를 등록
     }
   }
+
 }
 
 //7일 연속
@@ -63,8 +64,9 @@ export async function check7Consecutive(groupId: number){
     }
   }
 
-  await giveBadge(groupId, 1);
+  await giveBadge(groupId, 2);
 }
+
 
 export async function giveBadge(groupId : number, badgeId : number){
   await prisma.groupBadge.create({

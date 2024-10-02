@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { Tag } from "./Tag";
 
 export class Post{
   constructor(
@@ -8,13 +9,14 @@ export class Post{
     public title: string,
     public imageUrl: string | null,
     public content: string,
-    public location: string | null,
+    public location: string,
     public memoryMoment: Date,
     public isPublic: boolean,
     public postPassword: string,
     public createdAt: Date,
     public likeCount: number,
     public commentCount: number,
+    public tags: Tag[] = []
   ) {}
 
   static fromPrisma(prismaPost: any): Post{
@@ -31,7 +33,8 @@ export class Post{
       prismaPost.PPassword,
       prismaPost.CreatedDate,
       prismaPost.LikeCount,
-      prismaPost.CommentCount
+      prismaPost.CommentCount,
+      prismaPost.postTags?.map((pt: any) => pt.tag.Name) || []
     );
   }
 }

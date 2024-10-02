@@ -2,6 +2,7 @@
 
 import { Request, Response } from 'express';
 import prisma from '../prisma';
+import { checkNumOfMemories, check7Consecutive } from '../service/badgeService';
 
 export const getPostsByGroup = async (req: Request, res: Response) => {
   const { groupId } = req.params;
@@ -25,6 +26,10 @@ export const getPostsByGroup = async (req: Request, res: Response) => {
         CreatedDate: true,
       },
     });
+
+    await checkNumOfMemories(parseInt(groupId, 10));
+    await check7Consecutive(parseInt(groupId, 10));
+
     res.status(200).json(posts);
   } catch (error) {
     console.error('게시글 목록 조회 오류:', error);

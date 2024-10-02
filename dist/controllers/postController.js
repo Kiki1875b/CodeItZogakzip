@@ -6,6 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkIsPublic = exports.likePost = exports.verifyPassword = exports.getPostDetail = exports.deletePost = exports.updatePost = exports.getPosts = exports.createPost = exports.getPostsByGroup = void 0;
 const prisma_1 = __importDefault(require("../prisma"));
+const badgeService_1 = require("../service/badgeService");
 const getPostsByGroup = async (req, res) => {
     const { groupId } = req.params;
     try {
@@ -27,6 +28,8 @@ const getPostsByGroup = async (req, res) => {
                 CreatedDate: true,
             },
         });
+        await (0, badgeService_1.checkNumOfMemories)(parseInt(groupId, 10));
+        await (0, badgeService_1.check7Consecutive)(parseInt(groupId, 10));
         res.status(200).json(posts);
     }
     catch (error) {
