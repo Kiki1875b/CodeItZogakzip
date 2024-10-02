@@ -102,7 +102,7 @@ model PostTag {
 
 model Tag {
   TagID Int     @id @default(autoincrement()) @map("TagID")
-  Name  String  @db.VarChar(50)
+  Name  String  @unique @db.VarChar(50)
 
   postTags PostTag[]
 

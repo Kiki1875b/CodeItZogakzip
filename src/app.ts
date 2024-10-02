@@ -1,9 +1,8 @@
 // src/app.ts
 import express from 'express';
 import postRoutes from './routes/postRoutes';
-import prisma from './prisma';
 import groupRoutes from './routes/testGroupRoutes';
-import commentRoutes from './routes/commentRoutes';
+import commentRoutes from './routes/testCommentRoutes';
 import cors from 'cors';
 
 
@@ -26,8 +25,10 @@ const PORT = process.env.PORT || 5000;
 
 
 app.use('/api', groupRoutes); 
-app.use('/api/posts', postRoutes);
-app.use('/api/comments',commentRoutes);
+app.use('/api/groups/:GID/posts', postRoutes);
+app.use('/api/posts/', postRoutes);
+app.use('/api/posts/:postId/comments', commentRoutes);
+ app.use('/api/comments',commentRoutes);
 
 // 기본 라우트
 app.get('/', (req, res) => {
