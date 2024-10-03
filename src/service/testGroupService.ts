@@ -1,14 +1,15 @@
 import { GroupRepository } from "../repositories/GroupRepository";
 import { BadgeRepository } from "../repositories/BadgeRepository";
 import { Group } from "../model/Group";
+import { BadgeService } from "./testBadgeService";
 import { CreateGroupDto, UpdateGroupDto, GroupInfoResponseDto, GroupQueryDto, GroupListResponseDto  } from "../DTO/createGroupDTO";
 import { deleteGroup } from "../controllers/groupController";
 
 export class GroupService{
-  constructor(private groupRepository : GroupRepository, private badgeRepository : BadgeRepository){}
+  constructor(private groupRepository : GroupRepository, private badgeRepository : BadgeRepository, private badgeService: BadgeService){}
 
   async createGroup(groupData : CreateGroupDto): Promise<Group>{
-    return this.groupRepository.create({
+    const newGroup = await this.groupRepository.create({
       GName: groupData.GName,
       GImage : groupData.GImage,
       IsPublic : groupData.IsPublic,
@@ -18,6 +19,9 @@ export class GroupService{
       GBadgeCount: 0,
       PostCount : 0,
     });
+
+    await this.badgeService.scheduleBadgeAfterYear(newGroup.groupId, newGroup.createdDate);
+    return newGroup.group;
   }
 
   async getGroups(queryDto : GroupQueryDto): Promise<GroupListResponseDto> {
@@ -88,7 +92,8 @@ export class GroupService{
       throw { status: 404, message: "존재하지 않는 그룹입니다." };
     }
 
-    await this.groupRepository.update(groupId, { GLikes: { increment: 1 } });
+    const newGroup = await this.groupRepository.update(groupId, { GLikes: { increment: 1 } });
+    await this.badgeService.groupLike10000(groupId, newGroup.likeCount);
   }
 
   async isGroupPublic(groupId : number) : Promise<boolean>{

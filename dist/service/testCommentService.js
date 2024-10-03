@@ -3,8 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentService = void 0;
 const commentDTO_1 = require("../DTO/commentDTO");
 class CommentService {
-    constructor(groupRepository, commentRepository) {
-        this.groupRepository = groupRepository;
+    constructor(commentRepository) {
         this.commentRepository = commentRepository;
     }
     async createComment(commentDto) {

@@ -33,6 +33,7 @@ class PostController {
             });
         }
         catch (error) {
+            console.log(error);
             res.status(400).json({ message: "잘못된 요청입니다." });
         }
     }

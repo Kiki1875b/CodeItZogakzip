@@ -35,7 +35,7 @@ const groupRepository = new GroupRepository(prisma);
 const badgeRepository = new BadgeRepository(prisma);
 const postRepository = new PostRepository(prisma);
 const badgeService = new BadgeService(badgeRepository, groupRepository, postRepository);
-const groupService = new GroupService(groupRepository, badgeRepository);
+const groupService = new GroupService(groupRepository, badgeRepository, badgeService);
 const groupController = new GroupController(groupService, badgeService);
 
 router.post('/groups', multer({storage}).single('file'), groupController.createGroup.bind(groupController));

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BadgeService = void 0;
+const node_schedule_1 = require("node-schedule");
 class BadgeService {
     constructor(badgeRepository, groupRepository, postRepository) {
         this.badgeRepository = badgeRepository;
@@ -13,6 +14,13 @@ class BadgeService {
             throw { status: 404, message: "존재하지 않는 그룹입니다." };
         }
         return this.badgeRepository.findGroupBadge(groupId);
+    }
+    async scheduleBadgeAfterYear(groupId, createdAt) {
+        const checkDate = new Date(createdAt.getTime() + +365 * 24 * 60 * 60 * 1000);
+        (0, node_schedule_1.scheduleJob)(checkDate, async () => {
+            await this.yearAfterCreated(groupId);
+            console.log(`checked badge for ${groupId}`);
+        });
     }
     async checkNumOfMemories(groupId) {
         const group = await this.groupRepository.findById(groupId);
@@ -34,8 +42,8 @@ class BadgeService {
         if (!badges.some(badge => badge.name === "7일 연속 추억 등록")) {
             const dates = await this.postRepository.get7UniqueDates(groupId);
             if (dates) {
-                for (let i = 1; i < dates.length; i++) {
-                    const prev = dates[i - 1];
+                for (let i = 1; i < dates.length; i++) { // 1
+                    const prev = dates[i - 1]; // -1
                     const cur = dates[i];
                     if ((prev.getTime() - cur.getTime()) / (1000 * 3600 * 24) == 1) {
                         consecutiveDays++;
@@ -43,8 +51,11 @@ class BadgeService {
                     else {
                         consecutiveDays = 1;
                     }
-                    if (consecutiveDays >= 7) {
-                        await this.badgeRepository.findGroupBadge(groupId);
+                    if (consecutiveDays >= 1) {
+                        const badges = await this.badgeRepository.findGroupBadge(groupId);
+                        if (!badges.some(badge => badge.name === "7일연속")) {
+                            await this.badgeRepository.createGroupBadge(groupId, 1);
+                        }
                     }
                 }
             }
@@ -56,14 +67,9 @@ class BadgeService {
             if (!group) {
                 throw { status: 404, message: "존재하지 않는 그룹입니다." };
             }
-            const currentDate = new Date();
-            const createdDate = new Date(group.createdAt);
-            const diffInYears = (currentDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
-            if (diffInYears >= 1) {
-                const badges = await this.badgeRepository.findGroupBadge(groupId);
-                if (!badges.some(badge => badge.name === "1년")) {
-                    await this.badgeRepository.createGroupBadge(groupId, 3);
-                }
+            const badges = await this.badgeRepository.findGroupBadge(groupId);
+            if (!badges.some(badge => badge.name === "1년")) {
+                await this.badgeRepository.createGroupBadge(groupId, 3);
             }
         }
         catch (error) {
@@ -71,15 +77,15 @@ class BadgeService {
         }
     }
     // 그룹 공감마다 호출
-    async groupLike10000(groupId) {
+    async groupLike10000(groupId, likeCount) {
         try {
-            const group = await this.groupRepository.findById(groupId);
-            if (!group) {
-                throw { status: 404, message: "존재하지 않는 그룹입니다." };
-            }
-            if (group.likeCount >= 10000) {
+            // const group = await this.groupRepository.findById(groupId);
+            // if(!group){
+            //   throw { status: 404, message: "존재하지 않는 그룹입니다." }
+            // }
+            if (likeCount >= 10000) {
                 const badges = await this.badgeRepository.findGroupBadge(groupId);
-                if (!badges.some(badge => badge.name === "그룹 공감 10000")) {
+                if (!badges.some(badge => badge.name === "그룹 좋아요 10000")) {
                     await this.badgeRepository.createGroupBadge(groupId, 4);
                 }
             }
@@ -89,16 +95,14 @@ class BadgeService {
         }
     }
     // post 공감마다 호출
-    async postLike10000(groupId, postId) {
+    async postLike10000(groupId, postId, likeCount) {
         try {
-            const post = await this.postRepository.getPostDetail(postId);
-            if (!post) {
-                throw { status: 404, message: "존재하지 않는 그룹입니다." };
-            }
-            const likeNumber = post.likeCount;
-            if (likeNumber >= 10000) {
+            // const post = await this.postRepository.getPostDetail(postId);
+            // if(!post) { throw { status: 404, message: "존재하지 않는 그룹입니다." }}
+            // const likeNumber = post.likeCount;
+            if (likeCount >= 1) {
                 const badges = await this.badgeRepository.findGroupBadge(groupId);
-                if (!badges.some(badge => badge.name === "글 공감 10000")) {
+                if (!badges.some(badge => badge.name === "개시글 좋아요 10000")) {
                     await this.badgeRepository.createGroupBadge(groupId, 5);
                 }
             }
