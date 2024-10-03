@@ -2,7 +2,7 @@ POST http://localhost:5000/api/groups
 Content-Type: application/json
 
 {
-  "name": "testing",
+  "name": "badge test group",
   "password": "securepassword",
   "imageUrl": "http://example.com/image.jpg",
   "isPublic": true,
@@ -43,7 +43,7 @@ Content-Type: application/json
 
 
 ### 
-GET http://localhost:5000/api/groups/626
+GET http://localhost:5000/api/groups/830
 
 
 
@@ -61,7 +61,7 @@ Content-Type: application/json
 
 ### 
 
-POST http://localhost:5000/api/groups/822/like
+POST http://localhost:5000/api/groups/830/like
 
 
 ###
@@ -72,7 +72,7 @@ GET http://localhost:3000/api/groups/4/is-public
 ###
 
 
-POST http://localhost:5000/api/groups/826/posts
+POST http://localhost:5000/api/groups/830/posts
 Content-Type: application/json
 
 {
@@ -136,7 +136,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:5000/api/posts/1612/like
+POST http://localhost:5000/api/posts/1614/like
 
 
 ###

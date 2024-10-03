@@ -19,7 +19,7 @@ class GroupRepository {
     }
     async create(groupData) {
         const newGroup = await this.prisma.group.create({ data: groupData });
-        return Group_1.Group.fromPrisma(newGroup);
+        return { group: Group_1.Group.fromPrisma(newGroup), groupId: newGroup.GID, createdDate: new Date(newGroup.CreatedDate) };
     }
     async update(id, groupData) {
         const updatedGroup = await this.prisma.group.update({

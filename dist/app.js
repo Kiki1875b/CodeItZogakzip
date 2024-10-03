@@ -24,7 +24,6 @@ app.use('/api', testGroupRoutes_1.default);
 app.use('/api/groups/:GID/posts', postRoutes_1.default);
 app.use('/api/posts/', postRoutes_1.default);
 app.use('/api/posts/:postId/comments', testCommentRoutes_1.default);
-// app.use('/api/posts', postRoutes);
 app.use('/api/comments', testCommentRoutes_1.default);
 // 기본 라우트
 app.get('/', (req, res) => {

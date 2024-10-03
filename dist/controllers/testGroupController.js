@@ -57,9 +57,6 @@ class GroupController {
         const groupId = parseInt(req.params.GID, 10);
         try {
             const groupInfo = await this.groupService.getGroupInfo(groupId);
-            if (!groupInfo.isPublic) {
-                return res.status(302).json({ message: '비공개 그룹입니다. 비밀번호를 입력해 주세요.' });
-            }
             res.status(200).json({ groupInfo });
         }
         catch (error) {

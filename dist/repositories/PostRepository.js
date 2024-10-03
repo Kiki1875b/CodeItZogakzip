@@ -50,6 +50,12 @@ class PostRepository {
                 });
                 return newPost;
             });
+            await this.prisma.group.update({
+                where: { GID: groupId },
+                data: {
+                    PostCount: { increment: 1 }
+                }
+            });
             return Post_1.Post.fromPrisma(result);
         }
         catch (error) {
@@ -101,10 +107,12 @@ class PostRepository {
     }
     async updateLike(id) {
         try {
-            await this.prisma.post.update({
+            const updated = await this.prisma.post.update({
                 where: { PostID: id },
-                data: { LikeCount: { increment: 1 } }
+                data: { LikeCount: { increment: 1 } },
+                select: { PostID: true, GID: true, LikeCount: true }
             });
+            return updated;
         }
         catch (error) {
             throw { status: 404, message: "error while increasing" };
