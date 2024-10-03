@@ -79,10 +79,6 @@ class BadgeService {
     // 그룹 공감마다 호출
     async groupLike10000(groupId, likeCount) {
         try {
-            // const group = await this.groupRepository.findById(groupId);
-            // if(!group){
-            //   throw { status: 404, message: "존재하지 않는 그룹입니다." }
-            // }
             if (likeCount >= 10000) {
                 const badges = await this.badgeRepository.findGroupBadge(groupId);
                 if (!badges.some(badge => badge.name === "그룹 좋아요 10000")) {
@@ -97,10 +93,7 @@ class BadgeService {
     // post 공감마다 호출
     async postLike10000(groupId, postId, likeCount) {
         try {
-            // const post = await this.postRepository.getPostDetail(postId);
-            // if(!post) { throw { status: 404, message: "존재하지 않는 그룹입니다." }}
-            // const likeNumber = post.likeCount;
-            if (likeCount >= 1) {
+            if (likeCount >= 10000) {
                 const badges = await this.badgeRepository.findGroupBadge(groupId);
                 if (!badges.some(badge => badge.name === "개시글 좋아요 10000")) {
                     await this.badgeRepository.createGroupBadge(groupId, 5);

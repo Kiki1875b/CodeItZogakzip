@@ -35,19 +35,22 @@ if (!fs.existsSync(uploadDir)) {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // 파일이 저장될 디렉토리 지정
+    
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // 파일 이름을 고유하게 생성
+    
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    // 원본 파일 이름과 고유한 접미사를 결합
-    cb(null, uniqueSuffix + '-' + file.originalname);
+    const ext = path.extname(file.originalname); 
+    const uniqueFileName = uniqueSuffix + ext; 
+
+    cb(null, uniqueFileName); 
   }
 });
 
 
-router.post('/', multer({storage}).single('file'), postController.createPost.bind(postController));
+
+router.post('/', multer({storage}).single('imageURL'), postController.createPost.bind(postController));
 router.get('/', postController.getPosts.bind(postController));
 
 router.put('/:postId', postController.updatePost.bind(postController));
