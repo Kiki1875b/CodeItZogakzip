@@ -9,6 +9,7 @@ export class GroupService{
   constructor(private groupRepository : GroupRepository, private badgeRepository : BadgeRepository, private badgeService: BadgeService){}
 
   async createGroup(groupData : CreateGroupDto): Promise<Group>{
+    console.log(typeof groupData.IsPublic);
     const newGroup = await this.groupRepository.create({
       GName: groupData.GName,
       GImage : groupData.GImage,
@@ -19,6 +20,7 @@ export class GroupService{
       GBadgeCount: 0,
       PostCount : 0,
     });
+    console.log("here");
 
     await this.badgeService.scheduleBadgeAfterYear(newGroup.groupId, newGroup.createdDate);
     return newGroup.group;

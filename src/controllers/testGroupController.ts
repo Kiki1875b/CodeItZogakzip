@@ -12,10 +12,12 @@ export class GroupController{
     const imageFile = req.file;
 
     try{ 
-      
       const imageUrl = imageFile ? `/uploads/groups/main/${imageFile.filename}` : undefined;
-      const createGroupDto = new CreateGroupDto(name, password, isPublic, imageUrl, introduction);
+      const booleanIsPublic = isPublic === 'true' || isPublic === true;
+      const createGroupDto = new CreateGroupDto(name, password, booleanIsPublic, imageUrl, introduction);
+
       const newGroup = await this.groupService.createGroup(createGroupDto);
+
       res.status(200).json(newGroup);
     }catch(error){
       res.status(400).json({message : "그룹 생성 오류"});
