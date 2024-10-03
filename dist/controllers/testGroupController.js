@@ -8,9 +8,12 @@ class GroupController {
         this.badgeService = badgeService;
     }
     async createGroup(req, res) {
-        const { name, password, imageUrl, isPublic, introduction } = req.body;
+        const { name, password, isPublic, introduction } = req.body;
+        const imageFile = req.file;
         try {
-            const createGroupDto = new createGroupDTO_1.CreateGroupDto(name, password, isPublic, imageUrl, introduction);
+            const imageUrl = imageFile ? `/uploads/groups/main/${imageFile.filename}` : undefined;
+            const booleanIsPublic = isPublic === 'true' || isPublic === true;
+            const createGroupDto = new createGroupDTO_1.CreateGroupDto(name, password, booleanIsPublic, imageUrl, introduction);
             const newGroup = await this.groupService.createGroup(createGroupDto);
             res.status(200).json(newGroup);
         }
@@ -55,10 +58,6 @@ class GroupController {
         const groupId = parseInt(req.params.GID, 10);
         try {
             const groupInfo = await this.groupService.getGroupInfo(groupId);
-            await this.badgeService.check7Consecutive(groupId);
-            if (!groupInfo.isPublic) {
-                return res.status(302).json({ message: '비공개 그룹입니다. 비밀번호를 입력해 주세요.' });
-            }
             res.status(200).json({ groupInfo });
         }
         catch (error) {

@@ -1,7 +1,10 @@
+// src/app.ts
 import express from 'express';
-import prisma from './prisma';
+import postRoutes from './routes/postRoutes';
 import groupRoutes from './routes/testGroupRoutes';
+import commentRoutes from './routes/testCommentRoutes';
 import cors from 'cors';
+
 
 const app = express();
 
@@ -17,18 +20,23 @@ app.use((req, res, next) => {
   next();
 });
 
+
 const PORT = process.env.PORT || 5000;
 
 
 app.use('/api', groupRoutes); 
+app.use('/api/groups/:GID/posts', postRoutes);
+app.use('/api/posts/', postRoutes);
+app.use('/api/posts/:postId/comments', commentRoutes);
+ app.use('/api/comments',commentRoutes);
 
-
+// 기본 라우트
+app.get('/', (req, res) => {
+  res.send('API 서버가 정상적으로 작동 중입니다.');
+});
 
 app.listen(PORT, () => {
   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
 
-process.on('SIGINT', async () => {
-  await prisma.$disconnect();
-  process.exit(0);
-});
+export default app;

@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const client_1 = require("@prisma/client");
+const CommentRepository_1 = require("../repositories/CommentRepository");
+const testCommentService_1 = require("../service/testCommentService");
+const testCommentController_1 = require("../controllers/testCommentController");
+const router = express_1.default.Router({ mergeParams: true });
+const prisma = new client_1.PrismaClient();
+const commentRepository = new CommentRepository_1.CommentRepository(prisma);
+const commentService = new testCommentService_1.CommentService(commentRepository);
+const commentController = new testCommentController_1.CommentController(commentService);
+router.post('/', commentController.createComment.bind(commentController));
+router.get('/', commentController.getComments.bind(commentController));
+router.put('/:commentId', commentController.updateComment.bind(commentController));
+router.delete('/:commentId', commentController.deleteComment.bind(commentController));
+exports.default = router;

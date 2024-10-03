@@ -24,9 +24,15 @@ export class GroupRepository{
   }
 
 
-  async create(groupData: any): Promise<Group>{
+  async create(groupData: any): Promise<{group: Group; groupId: number; createdDate: Date}>{
+    try{
     const newGroup = await this.prisma.group.create({data : groupData});
-    return Group.fromPrisma(newGroup);
+
+    return {group : Group.fromPrisma(newGroup), groupId: newGroup.GID, createdDate: new Date(newGroup.CreatedDate)};
+    }catch(error){
+      console.log(error);
+      throw {error};
+    }
   }
 
   async update(id : number, groupData : any): Promise<Group>{
