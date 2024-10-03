@@ -3,12 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroupService = void 0;
 const createGroupDTO_1 = require("../DTO/createGroupDTO");
 class GroupService {
-    constructor(groupRepository, badgeRepository) {
+    constructor(groupRepository, badgeRepository, badgeService) {
         this.groupRepository = groupRepository;
         this.badgeRepository = badgeRepository;
+        this.badgeService = badgeService;
     }
     async createGroup(groupData) {
-        return this.groupRepository.create({
+        const newGroup = await this.groupRepository.create({
             GName: groupData.GName,
             GImage: groupData.GImage,
             IsPublic: groupData.IsPublic,
@@ -18,6 +19,8 @@ class GroupService {
             GBadgeCount: 0,
             PostCount: 0,
         });
+        await this.badgeService.scheduleBadgeAfterYear(newGroup.groupId, newGroup.createdDate);
+        return newGroup.group;
     }
     async getGroups(queryDto) {
         const { groups, totalCount } = await this.groupRepository.findMany({
@@ -77,7 +80,8 @@ class GroupService {
         if (!group) {
             throw { status: 404, message: "존재하지 않는 그룹입니다." };
         }
-        await this.groupRepository.update(groupId, { GLikes: { increment: 1 } });
+        const newGroup = await this.groupRepository.update(groupId, { GLikes: { increment: 1 } });
+        await this.badgeService.groupLike10000(groupId, newGroup.likeCount);
     }
     async isGroupPublic(groupId) {
         const group = await this.groupRepository.findById(groupId);

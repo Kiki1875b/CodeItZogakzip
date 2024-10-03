@@ -14,14 +14,16 @@ import { BadgeService } from '../service/testBadgeService';
 import { GroupRepository } from '../repositories/GroupRepository';
 import { GroupService } from '../service/testGroupService';
 
+
 const router = express.Router({ mergeParams: true });
 const prisma = new PrismaClient();
 const groupRepository = new GroupRepository(prisma);
 const badgeRepository = new BadgeRepository(prisma);
 const postRepository = new PostRepository(prisma);
 
-const groupService = new GroupService(groupRepository, badgeRepository);
-const postService = new PostService(postRepository);
+const badgeService = new BadgeService(badgeRepository, groupRepository, postRepository);
+const groupService = new GroupService(groupRepository, badgeRepository, badgeService);
+const postService = new PostService(postRepository, badgeService);
 
 const postController = new PostController(groupService, postService);
 

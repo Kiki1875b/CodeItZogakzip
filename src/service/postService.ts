@@ -1,12 +1,19 @@
 import { CreatePostDto, PostInfoResponseDto, PostListResponseDto, PostPublicDto, PostQueryDto, PostUpdateDto } from '../DTO/postDTO'
 import {Post} from '../model/Post'
 import { PostRepository } from '../repositories/PostRepository'
+import { BadgeService } from './testBadgeService';
 
 export class PostService{
-  constructor(private postRepository: PostRepository){}
+  constructor(private postRepository: PostRepository, private badgeService: BadgeService){}
 
   async createPost(groupId: number, post: CreatePostDto): Promise<Post | undefined>{
-    return await this.postRepository.create(groupId, post);
+    
+    const newPost = await this.postRepository.create(groupId, post);
+    await this.badgeService.check7Consecutive(groupId);
+    await this.badgeService.checkNumOfMemories(groupId);
+
+
+    return newPost;
   }
 
   async getPosts(queryDto : PostQueryDto, groupId: number): Promise<PostListResponseDto>{
@@ -118,12 +125,16 @@ export class PostService{
   }
 
   async postLike(groupId: number): Promise<void>{
-    try{const post = await this.postRepository.findPostById(groupId);
-    if(!post){
-      throw {status: 404, message: "존재하지 않는 그룹"}
-    }
+    try{
+      const post = await this.postRepository.findPostById(groupId);
+      if(!post){
+        throw {status: 404, message: "존재하지 않는 그룹"}
+      }
 
-    await this.postRepository.updateLike(groupId);}
+      const updated = await this.postRepository.updateLike(groupId);
+      await this.badgeService.postLike10000(updated.GID, updated.PostID, updated.LikeCount);
+      
+    }
     catch(error){
       throw {status: 404, message: "error"}
     }

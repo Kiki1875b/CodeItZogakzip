@@ -59,6 +59,7 @@ export class PostController{
         createdAt: newPost.createdAt
       });
     }catch(error){
+      console.log(error);
       res.status(400).json({message : "잘못된 요청입니다."});
     }
   }

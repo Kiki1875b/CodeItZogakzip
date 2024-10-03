@@ -26,7 +26,6 @@ export class PostRepository{
         });
         const tags = await Promise.all(tagPromises);
 
-
         // post 관련 작업
         const newPost = await prisma.post.create({
           data :{
@@ -57,11 +56,22 @@ export class PostRepository{
         });
 
 
+        
+
+
         return newPost;
+      });
+
+      await this.prisma.group.update({
+        where: {GID: groupId},
+        data: {
+          PostCount: {increment: 1}
+        }
       });
 
       return Post.fromPrisma(result);
   }catch(error){
+
     throw {status : 404, message: "Error creating Post"}
   }
 }
@@ -116,10 +126,13 @@ async findPostById(postId: number): Promise<Post | null>{
 }
 async updateLike(id: number){
   try{
-    await this.prisma.post.update({
+    const updated = await this.prisma.post.update({
       where: {PostID: id},
-      data: { LikeCount: { increment: 1 } }
+      data: { LikeCount: { increment: 1 } },
+      select: {PostID: true, GID: true, LikeCount: true}
     });
+
+    return updated;
   }catch(error){
     throw {status: 404, message: "error while increasing"};
   }

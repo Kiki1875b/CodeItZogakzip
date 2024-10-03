@@ -3,11 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostService = void 0;
 const postDTO_1 = require("../DTO/postDTO");
 class PostService {
-    constructor(postRepository) {
+    constructor(postRepository, badgeService) {
         this.postRepository = postRepository;
+        this.badgeService = badgeService;
     }
     async createPost(groupId, post) {
-        return await this.postRepository.create(groupId, post);
+        const newPost = await this.postRepository.create(groupId, post);
+        await this.badgeService.check7Consecutive(groupId);
+        await this.badgeService.checkNumOfMemories(groupId);
+        return newPost;
     }
     async getPosts(queryDto, groupId) {
         const { posts, totalCount } = await this.postRepository.findMany({
@@ -111,7 +115,8 @@ class PostService {
             if (!post) {
                 throw { status: 404, message: "존재하지 않는 그룹" };
             }
-            await this.postRepository.updateLike(groupId);
+            const updated = await this.postRepository.updateLike(groupId);
+            await this.badgeService.postLike10000(updated.GID, updated.PostID, updated.LikeCount);
         }
         catch (error) {
             throw { status: 404, message: "error" };
