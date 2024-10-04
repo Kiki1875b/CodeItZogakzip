@@ -26,8 +26,8 @@ async function main() {
     GPassword: `password${i + 1}`,
     CreatedDate: new Date(),
     GLikes: Math.floor(Math.random() * 1000), // 랜덤 공감 수
-    GBadgeCount: Math.floor(Math.random() * 10), // 랜덤 배지 수
-    PostCount: Math.floor(Math.random() * 50), // 랜덤 게시글 수
+    GBadgeCount: 0, // 랜덤 배지 수
+    PostCount: 0, // 랜덤 게시글 수
   }));
 
   await prisma.group.createMany({
