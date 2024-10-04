@@ -1,10 +1,11 @@
 import { CreatePostDto, PostInfoResponseDto, PostListResponseDto, PostPublicDto, PostQueryDto, PostUpdateDto } from '../DTO/postDTO'
 import {Post} from '../model/Post'
 import { PostRepository } from '../repositories/PostRepository'
+import { GroupRepository } from '../repositories/GroupRepository';
 import { BadgeService } from './testBadgeService';
 
 export class PostService{
-  constructor(private postRepository: PostRepository, private badgeService: BadgeService){}
+  constructor(private postRepository: PostRepository, private badgeService: BadgeService, private groupRepository: GroupRepository ){}
 
   async createPost(groupId: number, post: CreatePostDto): Promise<Post | undefined>{
     

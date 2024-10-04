@@ -23,7 +23,7 @@ const badgeRepository = new BadgeRepository_1.BadgeRepository(prisma);
 const postRepository = new PostRepository_1.PostRepository(prisma);
 const badgeService = new testBadgeService_1.BadgeService(badgeRepository, groupRepository, postRepository);
 const groupService = new testGroupService_1.GroupService(groupRepository, badgeRepository, badgeService);
-const postService = new postService_1.PostService(postRepository, badgeService);
+const postService = new postService_1.PostService(postRepository, badgeService, groupRepository);
 const postController = new testPostController_1.PostController(groupService, postService);
 const uploadDir = path_1.default.join(__dirname, '../uploads/posts/main/');
 if (!fs_1.default.existsSync(uploadDir)) {

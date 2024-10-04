@@ -137,6 +137,7 @@ async updateLike(id: number){
     throw {status: 404, message: "error while increasing"};
   }
 }
+
 async update(id : number, postData: any): Promise<Post>{
   
   try{

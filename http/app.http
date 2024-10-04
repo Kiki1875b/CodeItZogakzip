@@ -72,7 +72,7 @@ GET http://localhost:3000/api/groups/4/is-public
 ###
 
 
-POST http://localhost:5000/api/groups/830/posts
+POST http://localhost:5000/api/groups/691/posts
 Content-Type: application/json
 
 {

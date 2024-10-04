@@ -32,6 +32,7 @@ class GroupRepository {
             where: { GID: id },
             data: groupData,
         });
+        console.log(updatedGroup.PostCount);
         return Group_1.Group.fromPrisma(updatedGroup);
     }
     async delete(id) {
