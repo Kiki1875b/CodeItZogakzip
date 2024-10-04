@@ -40,6 +40,7 @@ export class GroupRepository{
       where: {GID : id},
       data : groupData,
     });
+    console.log(updatedGroup.PostCount);
 
     return Group.fromPrisma(updatedGroup);
   }

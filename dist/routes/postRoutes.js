@@ -23,7 +23,7 @@ const badgeRepository = new BadgeRepository_1.BadgeRepository(prisma);
 const postRepository = new PostRepository_1.PostRepository(prisma);
 const badgeService = new testBadgeService_1.BadgeService(badgeRepository, groupRepository, postRepository);
 const groupService = new testGroupService_1.GroupService(groupRepository, badgeRepository, badgeService);
-const postService = new postService_1.PostService(postRepository, badgeService);
+const postService = new postService_1.PostService(postRepository, badgeService, groupRepository);
 const postController = new testPostController_1.PostController(groupService, postService);
 const uploadDir = path_1.default.join(__dirname, '../uploads/posts/main/');
 if (!fs_1.default.existsSync(uploadDir)) {
@@ -31,17 +31,16 @@ if (!fs_1.default.existsSync(uploadDir)) {
 }
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
-        // 파일이 저장될 디렉토리 지정
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        // 파일 이름을 고유하게 생성
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        // 원본 파일 이름과 고유한 접미사를 결합
-        cb(null, uniqueSuffix + '-' + file.originalname);
+        const ext = path_1.default.extname(file.originalname);
+        const uniqueFileName = uniqueSuffix + ext;
+        cb(null, uniqueFileName);
     }
 });
-router.post('/', (0, multer_1.default)({ storage }).single('file'), postController.createPost.bind(postController));
+router.post('/', (0, multer_1.default)({ storage }).single('imageURL'), postController.createPost.bind(postController));
 router.get('/', postController.getPosts.bind(postController));
 router.put('/:postId', postController.updatePost.bind(postController));
 router.delete('/:postId', postController.deletePost.bind(postController));

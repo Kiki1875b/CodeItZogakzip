@@ -23,7 +23,7 @@ const postRepository = new PostRepository(prisma);
 
 const badgeService = new BadgeService(badgeRepository, groupRepository, postRepository);
 const groupService = new GroupService(groupRepository, badgeRepository, badgeService);
-const postService = new PostService(postRepository, badgeService);
+const postService = new PostService(postRepository, badgeService, groupRepository);
 
 const postController = new PostController(groupService, postService);
 
