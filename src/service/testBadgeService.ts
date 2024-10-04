@@ -36,7 +36,7 @@ export class BadgeService{
 
     if(group.postCount >= 20){
       const badges = await this.badgeRepository.findGroupBadge(groupId);
-      if(!badges.some(badge => badge.name === "20개 이상 등록")){
+      if(!badges.some(badge => badge.name === "20개 이상")){
         await this.badgeRepository.createGroupBadge(groupId, 2); 
       }
     }

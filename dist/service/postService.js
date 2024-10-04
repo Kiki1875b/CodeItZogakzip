@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostService = void 0;
 const postDTO_1 = require("../DTO/postDTO");
 class PostService {
-    constructor(postRepository, badgeService) {
+    constructor(postRepository, badgeService, groupRepository) {
         this.postRepository = postRepository;
         this.badgeService = badgeService;
+        this.groupRepository = groupRepository;
     }
     async createPost(groupId, post) {
         const newPost = await this.postRepository.create(groupId, post);
