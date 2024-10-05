@@ -8,12 +8,25 @@ class PostController {
         this.postService = postService;
     }
     async createPost(req, res) {
+        console.log(req.body);
         try {
             const groupId = parseInt(req.params.GID, 10);
-            const { nickname, title, content, isPublic, postPassword, gPassword, imageUrl, tags, location, moment, } = req.body;
+            const { nickname, title, content, isPublic, postPassword, gPassword, tags, location, moment, } = req.body;
+            const imageFile = req.file;
+            const imageUrl = imageFile ? `/uploads/posts/main/${imageFile.filename}` : undefined;
             const momentDate = new Date(moment);
-            const postDto = new postDTO_1.CreatePostDto(nickname, title, content, postPassword, tags, location, momentDate, isPublic, imageUrl);
+            let tagArray;
+            try {
+                tagArray = typeof tags === 'string' ? JSON.parse(tags) : tags;
+            }
+            catch (error) {
+                tagArray = [];
+            }
+            const isPublicBool = isPublic === 'true';
+            const postDto = new postDTO_1.CreatePostDto(nickname, title, content, postPassword, tagArray, location, momentDate, isPublicBool, imageUrl);
+            console.log(postDto);
             const newPost = await this.postService.createPost(groupId, postDto);
+            console.log(newPost);
             if (!newPost)
                 throw { error: 404, message: "invalid" };
             res.status(200).json({

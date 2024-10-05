@@ -75,7 +75,7 @@ model Post {
   Image        String?  @db.VarChar(255)
   Content      String   @db.Text
   Location     String?  @db.VarChar(100)
-  MemoryMoment DateTime @map("MemoryMoment")
+  MemoryMoment DateTime? @map("MemoryMoment")
   IsPublic     Boolean
   PPassword    String   @db.VarChar(255)
   CreatedDate  DateTime @default(now()) @map("CreatedDate")

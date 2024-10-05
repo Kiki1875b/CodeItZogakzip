@@ -8,7 +8,7 @@ import cors from 'cors';
 
 const app = express();
 
-app.use(express.json());
+
 
 app.use(cors({
   origin: 'http://localhost:3000', // 프론트엔드 주소 명시
@@ -17,19 +17,24 @@ app.use(cors({
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
+
+  if(req.body){
+    console.log(req.body);
+  }
   next();
 });
 
 
 const PORT = process.env.PORT || 5000;
 
+app.use('/api/groups/:GID/posts', postRoutes);
 
 app.use('/api', groupRoutes); 
-app.use('/api/groups/:GID/posts', postRoutes);
+
 app.use('/api/posts/', postRoutes);
 app.use('/api/posts/:postId/comments', commentRoutes);
- app.use('/api/comments',commentRoutes);
-
+app.use('/api/comments',commentRoutes);
+app.use(express.json());
 // 기본 라우트
 app.get('/', (req, res) => {
   res.send('API 서버가 정상적으로 작동 중입니다.');

@@ -25,7 +25,7 @@ export class PostRepository{
           return tag;
         });
         const tags = await Promise.all(tagPromises);
-
+        console.log(tags);
         // post 관련 작업
         const newPost = await prisma.post.create({
           data :{
@@ -71,7 +71,7 @@ export class PostRepository{
 
       return Post.fromPrisma(result);
   }catch(error){
-
+    console.log(error);
     throw {status : 404, message: "Error creating Post"}
   }
 }

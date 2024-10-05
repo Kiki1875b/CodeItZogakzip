@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    
+    console.log(file.fieldname);
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname); 
     const uniqueFileName = uniqueSuffix + ext; 
@@ -50,7 +50,8 @@ const storage = multer.diskStorage({
 
 
 
-router.post('/', multer({storage}).single('imageURL'), postController.createPost.bind(postController));
+router.post('/', multer({ storage }).single('imageUrl'), postController.createPost.bind(postController));
+
 router.get('/', postController.getPosts.bind(postController));
 
 router.put('/:postId', postController.updatePost.bind(postController));

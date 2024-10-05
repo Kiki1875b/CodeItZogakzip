@@ -34,13 +34,14 @@ const storage = multer_1.default.diskStorage({
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
+        console.log(file.fieldname);
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const ext = path_1.default.extname(file.originalname);
         const uniqueFileName = uniqueSuffix + ext;
         cb(null, uniqueFileName);
     }
 });
-router.post('/', (0, multer_1.default)({ storage }).single('imageURL'), postController.createPost.bind(postController));
+router.post('/', (0, multer_1.default)({ storage }).single('imageUrl'), postController.createPost.bind(postController));
 router.get('/', postController.getPosts.bind(postController));
 router.put('/:postId', postController.updatePost.bind(postController));
 router.delete('/:postId', postController.deletePost.bind(postController));
