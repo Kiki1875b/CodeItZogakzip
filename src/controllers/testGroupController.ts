@@ -12,6 +12,11 @@ export class GroupController{
     const imageFile = req.file;
 
     try{ 
+      if (!name || !password  || !introduction) {
+        return res.status(400).json({
+          error: 'Nickname, password, content, and introduction are required.',
+        });
+      }
       const imageUrl = imageFile ? `/uploads/groups/main/${imageFile.filename}` : undefined;
       const booleanIsPublic = isPublic === 'true' || isPublic === true;
       const createGroupDto = new CreateGroupDto(name, password, booleanIsPublic, imageUrl, introduction);

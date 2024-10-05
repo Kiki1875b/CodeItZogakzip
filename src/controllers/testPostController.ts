@@ -24,6 +24,13 @@ export class PostController{
         location,
         moment,
       } = req.body;
+
+      if (!nickname || !title || !content || !postPassword) {
+        return res.status(400).json({
+          error: 'Nickname, title, content, and postPassword are required.',
+        });
+      }
+      
       const imageFile = req.file;
 
       const imageUrl = imageFile? `/uploads/posts/main/${imageFile.filename}` : undefined;

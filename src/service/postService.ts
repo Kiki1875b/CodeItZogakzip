@@ -54,8 +54,13 @@ export class PostService{
     const updatedData: any = {};
 
     if(updateDto.nickname) updatedData.Nickname = updateDto.nickname;
+
+
     if(updateDto.title) updatedData.Title = updateDto.title;
+
+
     if(updateDto.content) updatedData.content = updateDto.content;
+
     if(updateDto.imageUrl) updatedData.Image = updateDto.imageUrl;
     if(updateDto.tags) updatedData.tags = updateDto.tags;
     if(updateDto.location) updatedData.Location = updateDto.location;
