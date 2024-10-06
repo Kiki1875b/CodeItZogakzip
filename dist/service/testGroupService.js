@@ -70,11 +70,13 @@ class GroupService {
     }
     async getGroupInfo(groupId) {
         const group = await this.groupRepository.findById(groupId);
+        console.log("getGroupInfo: ", group);
         if (!group) {
             throw { status: 404, message: "존재하지 않는 그룹입니다." };
         }
         const badges = await this.badgeRepository.findGroupBadge(groupId);
         const badgeNames = badges.map(badge => badge.name);
+        console.log("BADGES: ", badgeNames);
         return new createGroupDTO_1.GroupInfoResponseDto(group, badgeNames);
     }
     async groupLike(groupId) {

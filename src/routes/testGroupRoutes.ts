@@ -44,6 +44,7 @@ router.post('/groups', multer({storage}).single('imageURL'), groupController.cre
 router.get('/groups', groupController.getGroups.bind(groupController));
 router.put('/groups/:GID', groupController.updateGroup.bind(groupController));
 router.delete('/groups/:GID', groupController.deleteGroup.bind(groupController));
+
 router.get('/groups/:GID', groupController.getGroupInfo.bind(groupController));
 router.post('/groups/:GID/like', groupController.groupLike.bind(groupController));
 router.get('/groups/:GID/is-public', groupController.isGroupPublic.bind(groupController));

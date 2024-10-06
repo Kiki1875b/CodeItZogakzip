@@ -101,12 +101,15 @@ class PostService {
             if (!post) {
                 throw { status: 404, message: "존재하지 않는 그룹" };
             }
+            console.log(post.postPassword, postPassword);
             if (post.postPassword !== postPassword) {
+                console.log("틀린 비밀번호");
                 return false;
             }
             return true;
         }
         catch (error) {
+            console.log(error);
             throw { status: 404, message: "틀린 요청" };
         }
     }

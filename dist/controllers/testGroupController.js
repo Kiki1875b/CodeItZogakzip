@@ -11,6 +11,11 @@ class GroupController {
         const { name, password, isPublic, introduction } = req.body;
         const imageFile = req.file;
         try {
+            if (!name || !password || !introduction) {
+                return res.status(400).json({
+                    error: 'Nickname, password, content, and introduction are required.',
+                });
+            }
             const imageUrl = imageFile ? `/uploads/groups/main/${imageFile.filename}` : undefined;
             const booleanIsPublic = isPublic === 'true' || isPublic === true;
             const createGroupDto = new createGroupDTO_1.CreateGroupDto(name, password, booleanIsPublic, imageUrl, introduction);
@@ -56,8 +61,10 @@ class GroupController {
     }
     async getGroupInfo(req, res) {
         const groupId = parseInt(req.params.GID, 10);
+        console.log(groupId);
         try {
             const groupInfo = await this.groupService.getGroupInfo(groupId);
+            console.log("group INFOR: ", groupInfo);
             res.status(200).json({ groupInfo });
         }
         catch (error) {

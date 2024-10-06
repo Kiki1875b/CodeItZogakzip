@@ -12,6 +12,11 @@ class PostController {
         try {
             const groupId = parseInt(req.params.GID, 10);
             const { nickname, title, content, isPublic, postPassword, gPassword, tags, location, moment, } = req.body;
+            if (!nickname || !title || !content || !postPassword) {
+                return res.status(400).json({
+                    error: 'Nickname, title, content, and postPassword are required.',
+                });
+            }
             const imageFile = req.file;
             const imageUrl = imageFile ? `/uploads/posts/main/${imageFile.filename}` : undefined;
             const momentDate = new Date(moment);
@@ -54,7 +59,9 @@ class PostController {
         const groupId = parseInt(req.params.GID, 10);
         try {
             const queryDto = new postDTO_1.PostQueryDto(req.query);
+            console.log(queryDto);
             const postListResponse = await this.postService.getPosts(queryDto, groupId);
+            console.log(postListResponse);
             res.status(200).json(postListResponse);
         }
         catch {
@@ -88,6 +95,9 @@ class PostController {
         try {
             const postId = parseInt(req.params.postId, 10);
             const post = await this.postService.getPostDetail(postId);
+            if (!post) {
+                return res.status(404).json({ message: "Post not found" });
+            }
             res.status(200).json(post);
         }
         catch (error) {
@@ -98,6 +108,7 @@ class PostController {
         try {
             const postId = parseInt(req.params.postId, 10);
             const { password } = req.body;
+            console.log(postId, password);
             const verification = await this.postService.verifyPassword(postId, password);
             if (!verification) {
                 throw { status: 404, message: "verification failed" };

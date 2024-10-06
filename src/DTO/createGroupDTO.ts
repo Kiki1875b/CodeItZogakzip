@@ -39,12 +39,12 @@ export class GroupInfoResponseDto{ // 그룹 상세 정보 반환 Dto
   imageUrl: string | null;
   isPublic: boolean;
   likeCount: number;
-  badges: string[];
+  badges?: string[];
   postCount: number;
   createdAt: Date;
   introduction: string | null;
 
-  constructor(group: Group, badges: string[]) {
+  constructor(group: Group, badges?: string[]) {
     this.id = group.id;
     this.name = group.name;
     this.imageUrl = group.imageUrl;

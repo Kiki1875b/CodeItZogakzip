@@ -88,8 +88,9 @@ export class PostController{
     const groupId = parseInt(req.params.GID,10);
     try{
       const queryDto = new PostQueryDto(req.query);
-      
+      console.log(queryDto);
       const postListResponse = await this.postService.getPosts(queryDto, groupId);
+      console.log(postListResponse);
       res.status(200).json(postListResponse);
     }catch{
       res.status(400).json({message: "잘못된 요청입니다"});
@@ -126,6 +127,9 @@ export class PostController{
     try{
       const postId = parseInt(req.params.postId, 10);
       const post = await this.postService.getPostDetail(postId);
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });  
+      }
       res.status(200).json(post);
     }catch(error){
       res.status(404).json(error);
@@ -136,13 +140,13 @@ export class PostController{
     try{
       const postId = parseInt(req.params.postId, 10);
       const { password } = req.body;
-
-
+      console.log(postId, password);
 
       const verification = await this.postService.verifyPassword(postId, password);
       if(!verification){
         throw {status: 404, message :"verification failed"}
       }
+
       res.status(200).json(verification);
     }catch(error){
       res.status(404).json({error});

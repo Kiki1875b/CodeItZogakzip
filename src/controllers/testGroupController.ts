@@ -68,8 +68,11 @@ export class GroupController{
 
   async getGroupInfo(req: Request, res: Response) {
     const groupId = parseInt(req.params.GID, 10);
+    console.log(groupId);
     try {
       const groupInfo = await this.groupService.getGroupInfo(groupId);
+
+      console.log("group INFOR: ", groupInfo);
 
       res.status(200).json({ groupInfo });
     } catch (error: any) {
