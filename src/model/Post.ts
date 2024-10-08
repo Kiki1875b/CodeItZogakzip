@@ -16,7 +16,7 @@ export class Post{
     public createdAt: Date,
     public likeCount: number,
     public commentCount: number,
-    public tags: Tag[] = []
+    public tags: string[] = []
   ) {}
 
   static fromPrisma(prismaPost: any): Post{
@@ -34,7 +34,7 @@ export class Post{
       prismaPost.CreatedDate,
       prismaPost.LikeCount,
       prismaPost.CommentCount,
-      prismaPost.postTags?.map((pt: any) => pt.tag.Name) || []
+      prismaPost.postTags?.map((pt: any) => pt.tag.name) || []
     );
   }
 }

@@ -19,7 +19,7 @@ class Post {
         this.tags = tags;
     }
     static fromPrisma(prismaPost) {
-        return new Post(prismaPost.PostID, prismaPost.GID, prismaPost.Nickname, prismaPost.Title, prismaPost.Image, prismaPost.Content, prismaPost.Location, prismaPost.memoryMoment, prismaPost.IsPublic, prismaPost.PPassword, prismaPost.CreatedDate, prismaPost.LikeCount, prismaPost.CommentCount, prismaPost.postTags?.map((pt) => pt.tag.Name) || []);
+        return new Post(prismaPost.PostID, prismaPost.GID, prismaPost.Nickname, prismaPost.Title, prismaPost.Image, prismaPost.Content, prismaPost.Location, prismaPost.memoryMoment, prismaPost.IsPublic, prismaPost.PPassword, prismaPost.CreatedDate, prismaPost.LikeCount, prismaPost.CommentCount, prismaPost.postTags?.map((pt) => pt.tag.name) || []);
     }
 }
 exports.Post = Post;

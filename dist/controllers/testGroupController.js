@@ -52,6 +52,7 @@ class GroupController {
         const groupId = parseInt(req.params.GID, 10);
         const { password } = req.body;
         try {
+            console.log(groupId, password);
             await this.groupService.deleteGroup(groupId, password);
             res.status(200).json({ message: "성공적으로 삭제되었습니다." });
         }

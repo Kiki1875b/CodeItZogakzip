@@ -67,9 +67,11 @@ export class GroupService{
   async deleteGroup(groupId: number, password: string): Promise<void>{
     const group = await this.groupRepository.findById(groupId);
     if (!group) {
+      console.log("nogroup");
       throw { status: 404, message: "존재하지 않는 그룹입니다." };
     }
     if (password !== group.password) {
+      console.log("wrong pwd");
       throw { status: 403, message: "틀린 비밀번호 입니다." };
     }
 

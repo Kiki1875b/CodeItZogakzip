@@ -82,7 +82,7 @@ model Post {
   LikeCount    Int      @default(0)
   CommentCount Int      @default(0)
 
-  group    Group   @relation(fields: [GID], references: [GID])
+  group    Group   @relation(fields: [GID], references: [GID], onDelete: Cascade)
   comments Comment[]
   postTags PostTag[]
 

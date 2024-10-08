@@ -36,7 +36,36 @@ class GroupRepository {
         return Group_1.Group.fromPrisma(updatedGroup);
     }
     async delete(id) {
-        await this.prisma.group.delete({ where: { GID: id } });
+        console.log('delete');
+        try {
+            await this.prisma.comment.deleteMany({
+                where: {
+                    post: {
+                        GID: id,
+                    },
+                },
+            });
+            await this.prisma.postTag.deleteMany({
+                where: {
+                    post: {
+                        GID: id,
+                    },
+                },
+            });
+            await this.prisma.post.deleteMany({
+                where: {
+                    GID: id,
+                },
+            });
+            await this.prisma.group.delete({
+                where: {
+                    GID: id,
+                },
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
     async findMany(params) {
         const { page, pageSize, sortBy, keyword, isPublic } = params;

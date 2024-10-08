@@ -46,8 +46,43 @@ export class GroupRepository{
   }
 
 
-  async delete(id: number): Promise<void>{
-    await this.prisma.group.delete({where :{GID: id}});
+  async delete(id: number): Promise<void> {
+    console.log('delete');
+    try {
+      
+      await this.prisma.comment.deleteMany({
+        where: {
+          post: {
+            GID: id,
+          },
+        },
+      });
+  
+      
+      await this.prisma.postTag.deleteMany({
+        where: {
+          post: {
+            GID: id,
+          },
+        },
+      });
+  
+
+      await this.prisma.post.deleteMany({
+        where: {
+          GID: id,
+        },
+      });
+  
+     
+      await this.prisma.group.delete({
+        where: {
+          GID: id,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findMany(params: {page: number, pageSize : number, sortBy : string, keyword : string, isPublic: boolean}): Promise<{groups: Group[]; totalCount: number}>{

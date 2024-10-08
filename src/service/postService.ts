@@ -103,7 +103,7 @@ export class PostService{
       }
 
       const tags = await this.postRepository.findPostTags(postId);
-      post.tags = tags;
+      post.tags = tags.map((tag) => tag.name);
 
       console.log(post);
 
@@ -154,11 +154,11 @@ export class PostService{
   }
 
   async isPublic(postId: number): Promise<PostPublicDto>{
-    try{
+    //try{
       return await this.postRepository.checkPublic(postId); 
-    }catch(error){
-      throw {status: 404, message: "failed"}
-    }
+    // }catch(error){
+    //   //throw {status: 404, message: "failed"}
+    // }
   }
 
 }

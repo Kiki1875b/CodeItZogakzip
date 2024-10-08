@@ -37,7 +37,7 @@ class PostService {
                 throw { status: 404, message: "존재하지 않는 개시글" };
             }
             if (post.postPassword !== postPassword) {
-                throw { status: 403, message: "틀린 비번" };
+                throw { status: 403, message: "틀린 비밀번호" };
             }
             const updatedData = {};
             if (updateDto.nickname)
@@ -87,7 +87,7 @@ class PostService {
                 throw { status: 404, message: "존재하지 않는 그룹" };
             }
             const tags = await this.postRepository.findPostTags(postId);
-            post.tags = tags;
+            post.tags = tags.map((tag) => tag.name);
             console.log(post);
             return post;
         }
@@ -127,12 +127,11 @@ class PostService {
         }
     }
     async isPublic(postId) {
-        try {
-            return await this.postRepository.checkPublic(postId);
-        }
-        catch (error) {
-            throw { status: 404, message: "failed" };
-        }
+        //try{
+        return await this.postRepository.checkPublic(postId);
+        // }catch(error){
+        //   //throw {status: 404, message: "failed"}
+        // }
     }
 }
 exports.PostService = PostService;

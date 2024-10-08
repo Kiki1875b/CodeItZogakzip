@@ -136,7 +136,7 @@ class PostController {
             res.status(200).json(isPublic);
         }
         catch (error) {
-            res.status(404).json(error);
+            //res.status(404).json(error);
         }
     }
 }

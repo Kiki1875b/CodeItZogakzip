@@ -85,7 +85,17 @@ export const getComments = async (req: Request, res: Response) => {
         CreatedDate: true,
       },
     });
-
+    const tempCheck = {currentPage: page,
+    totalPages,
+    totalItemCount,
+    data: comments.map((comment) => ({
+      id: comment.CommentID,
+      nickname: comment.Nickname,
+      content: comment.Content,
+      createdAt: comment.CreatedDate,
+    }))}
+    console.log(tempCheck);
+    
     res.status(200).json({
       currentPage: page,
       totalPages,
